@@ -10,7 +10,7 @@
 */
 
 const expect = require('chai').expect;
-const UFragments = artifacts.require('UFragments.sol');
+const Tracker = artifacts.require('Tracker.sol');
 const _require = require('app-root-path').require;
 const BlockchainCaller = _require('/util/blockchain_caller');
 const chain = new BlockchainCaller(web3);
@@ -19,27 +19,27 @@ const BigNumber = web3.BigNumber;
 
 const endSupply = new BigNumber(2).pow(128).minus(1);
 
-let uFragments, preRebaseSupply, postRebaseSupply;
+let tracker, preRebaseSupply, postRebaseSupply;
 preRebaseSupply = new BigNumber(0);
 postRebaseSupply = new BigNumber(0);
 
 async function exec () {
   const accounts = await chain.getUserAccounts();
   const deployer = accounts[0];
-  uFragments = await UFragments.new();
-  await uFragments.sendTransaction({
+  tracker = await Tracker.new();
+  await tracker.sendTransaction({
     data: encodeCall('initialize', ['address'], [deployer]),
     from: deployer
   });
-  await uFragments.setMonetaryPolicy(deployer, {from: deployer});
+  await tracker.setMonetaryPolicy(deployer, {from: deployer});
 
   let i = 0;
   do {
     console.log('Iteration', i + 1);
 
-    preRebaseSupply = await uFragments.totalSupply.call();
-    await uFragments.rebase(2 * i, 1, {from: deployer});
-    postRebaseSupply = await uFragments.totalSupply.call();
+    preRebaseSupply = await tracker.totalSupply.call();
+    await tracker.rebase(2 * i, 1, {from: deployer});
+    postRebaseSupply = await tracker.totalSupply.call();
     console.log('Rebased by 1 AMPL');
     console.log('Total supply is now', postRebaseSupply.toString(), 'AMPL');
 
@@ -47,9 +47,9 @@ async function exec () {
     expect(postRebaseSupply.minus(preRebaseSupply).toNumber()).to.eq(1);
 
     console.log('Doubling supply');
-    await uFragments.rebase(2 * i + 1, postRebaseSupply, {from: deployer});
+    await tracker.rebase(2 * i + 1, postRebaseSupply, {from: deployer});
     i++;
-  } while ((await uFragments.totalSupply.call()).lt(endSupply));
+  } while ((await tracker.totalSupply.call()).lt(endSupply));
 }
 
 module.exports = function (done) {

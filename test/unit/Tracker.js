@@ -1,4 +1,4 @@
-const UFragments = artifacts.require('UFragments.sol');
+const Tracker = artifacts.require('Tracker.sol');
 const _require = require('app-root-path').require;
 const BlockchainCaller = _require('/util/blockchain_caller');
 const chain = new BlockchainCaller(web3);
@@ -18,34 +18,34 @@ const transferAmount = toUFrgDenomination(10);
 const unitTokenAmount = toUFrgDenomination(1);
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
-let uFragments, b, r, deployer, user, initialSupply;
+let tracker, b, r, deployer, user, initialSupply;
 async function setupContracts () {
   const accounts = await chain.getUserAccounts();
   deployer = accounts[0];
   user = accounts[1];
-  uFragments = await UFragments.new();
-  r = await uFragments.sendTransaction({
+  tracker = await Tracker.new();
+  r = await tracker.sendTransaction({
     data: encodeCall('initialize', ['address'], [deployer]),
     from: deployer
   });
-  initialSupply = await uFragments.totalSupply.call();
+  initialSupply = await tracker.totalSupply.call();
 }
 
-contract('UFragments', function (accounts) {
-  before('setup UFragments contract', setupContracts);
+contract('Tracker', function (accounts) {
+  before('setup Tracker contract', setupContracts);
 
   it('should reject any ether sent to it', async function () {
     expect(
-      await chain.isEthException(uFragments.sendTransaction({ from: user, value: 1 }))
+      await chain.isEthException(tracker.sendTransaction({ from: user, value: 1 }))
     ).to.be.true;
   });
 });
 
-contract('UFragments:Initialization', function (accounts) {
-  before('setup UFragments contract', setupContracts);
+contract('Tracker:Initialization', function (accounts) {
+  before('setup Tracker contract', setupContracts);
 
-  it('should transfer 50M uFragments to the deployer', async function () {
-    (await uFragments.balanceOf.call(deployer)).should.be.bignumber.eq(INTIAL_SUPPLY);
+  it('should transfer 50M tracker to the deployer', async function () {
+    (await tracker.balanceOf.call(deployer)).should.be.bignumber.eq(INTIAL_SUPPLY);
     const log = r.logs[0];
     expect(log).to.exist;
     expect(log.event).to.eq('Transfer');
@@ -59,38 +59,38 @@ contract('UFragments:Initialization', function (accounts) {
   });
 
   it('should set the owner', async function () {
-    expect(await uFragments.owner.call()).to.eq(deployer);
+    expect(await tracker.owner.call()).to.eq(deployer);
   });
 
   it('should set detailed ERC20 parameters', async function () {
-    expect(await uFragments.name.call()).to.eq('Ampleforth');
-    expect(await uFragments.symbol.call()).to.eq('AMPL');
-    (await uFragments.decimals.call()).should.be.bignumber.eq(DECIMALS);
+    expect(await tracker.name.call()).to.eq('Ampleforth');
+    expect(await tracker.symbol.call()).to.eq('AMPL');
+    (await tracker.decimals.call()).should.be.bignumber.eq(DECIMALS);
   });
 
   it('should have 9 decimals', async function () {
-    const decimals = await uFragments.decimals.call();
+    const decimals = await tracker.decimals.call();
     decimals.should.be.bignumber.eq(DECIMALS);
   });
 
   it('should have AMPL symbol', async function () {
-    const symbol = await uFragments.symbol.call();
+    const symbol = await tracker.symbol.call();
     symbol.should.be.eq('AMPL');
   });
 });
 
-contract('UFragments:setMonetaryPolicy', function (accounts) {
+contract('Tracker:setMonetaryPolicy', function (accounts) {
   const policy = accounts[1];
 
-  before('setup UFragments contract', setupContracts);
+  before('setup Tracker contract', setupContracts);
 
   it('should set reference to policy contract', async function () {
-    await uFragments.setMonetaryPolicy(policy, { from: deployer });
-    expect(await uFragments.monetaryPolicy.call()).to.eq(policy);
+    await tracker.setMonetaryPolicy(policy, { from: deployer });
+    expect(await tracker.monetaryPolicy.call()).to.eq(policy);
   });
 
   it('should emit policy updated event', async function () {
-    const r = await uFragments.setMonetaryPolicy(policy, { from: deployer });
+    const r = await tracker.setMonetaryPolicy(policy, { from: deployer });
     const log = r.logs[0];
     expect(log).to.exist;
     expect(log.event).to.eq('LogMonetaryPolicyUpdated');
@@ -98,75 +98,75 @@ contract('UFragments:setMonetaryPolicy', function (accounts) {
   });
 });
 
-contract('UFragments:setMonetaryPolicy:accessControl', function (accounts) {
+contract('Tracker:setMonetaryPolicy:accessControl', function (accounts) {
   const policy = accounts[1];
 
-  before('setup UFragments contract', setupContracts);
+  before('setup Tracker contract', setupContracts);
 
   it('should be callable by owner', async function () {
     expect(
-      await chain.isEthException(uFragments.setMonetaryPolicy(policy, { from: deployer }))
+      await chain.isEthException(tracker.setMonetaryPolicy(policy, { from: deployer }))
     ).to.be.false;
   });
 });
 
-contract('UFragments:setMonetaryPolicy:accessControl', function (accounts) {
+contract('Tracker:setMonetaryPolicy:accessControl', function (accounts) {
   const policy = accounts[1];
   const user = accounts[2];
 
-  before('setup UFragments contract', setupContracts);
+  before('setup Tracker contract', setupContracts);
 
   it('should NOT be callable by non-owner', async function () {
     expect(
-      await chain.isEthException(uFragments.setMonetaryPolicy(policy, { from: user }))
+      await chain.isEthException(tracker.setMonetaryPolicy(policy, { from: user }))
     ).to.be.true;
   });
 });
 
-contract('UFragments:Rebase:accessControl', function (accounts) {
-  before('setup UFragments contract', async function () {
+contract('Tracker:Rebase:accessControl', function (accounts) {
+  before('setup Tracker contract', async function () {
     await setupContracts();
-    await uFragments.setMonetaryPolicy(user, {from: deployer});
+    await tracker.setMonetaryPolicy(user, {from: deployer});
   });
 
   it('should be callable by monetary policy', async function () {
     expect(
-      await chain.isEthException(uFragments.rebase(1, transferAmount, { from: user }))
+      await chain.isEthException(tracker.rebase(1, transferAmount, { from: user }))
     ).to.be.false;
   });
 
   it('should not be callable by others', async function () {
     expect(
-      await chain.isEthException(uFragments.rebase(1, transferAmount, { from: deployer }))
+      await chain.isEthException(tracker.rebase(1, transferAmount, { from: deployer }))
     ).to.be.true;
   });
 });
 
-contract('UFragments:Rebase:Expansion', function (accounts) {
+contract('Tracker:Rebase:Expansion', function (accounts) {
   // Rebase +5M (10%), with starting balances A:750 and B:250.
   const A = accounts[2];
   const B = accounts[3];
   const policy = accounts[1];
   const rebaseAmt = INTIAL_SUPPLY / 10;
 
-  before('setup UFragments contract', async function () {
+  before('setup Tracker contract', async function () {
     await setupContracts();
-    await uFragments.setMonetaryPolicy(policy, {from: deployer});
-    await uFragments.transfer(A, toUFrgDenomination(750), { from: deployer });
-    await uFragments.transfer(B, toUFrgDenomination(250), { from: deployer });
-    r = await uFragments.rebase(1, rebaseAmt, {from: policy});
+    await tracker.setMonetaryPolicy(policy, {from: deployer});
+    await tracker.transfer(A, toUFrgDenomination(750), { from: deployer });
+    await tracker.transfer(B, toUFrgDenomination(250), { from: deployer });
+    r = await tracker.rebase(1, rebaseAmt, {from: policy});
   });
 
   it('should increase the totalSupply', async function () {
-    b = await uFragments.totalSupply.call();
+    b = await tracker.totalSupply.call();
     b.should.be.bignumber.eq(initialSupply.plus(rebaseAmt));
   });
 
   it('should increase individual balances', async function () {
-    b = await uFragments.balanceOf.call(A);
+    b = await tracker.balanceOf.call(A);
     b.should.be.bignumber.eq(toUFrgDenomination(825));
 
-    b = await uFragments.balanceOf.call(B);
+    b = await tracker.balanceOf.call(B);
     b.should.be.bignumber.eq(toUFrgDenomination(275));
   });
 
@@ -179,28 +179,28 @@ contract('UFragments:Rebase:Expansion', function (accounts) {
   });
 
   it('should return the new supply', async function () {
-    const returnVal = await uFragments.rebase.call(2, rebaseAmt, {from: policy});
-    await uFragments.rebase(2, rebaseAmt, {from: policy});
-    const supply = await uFragments.totalSupply.call();
+    const returnVal = await tracker.rebase.call(2, rebaseAmt, {from: policy});
+    await tracker.rebase(2, rebaseAmt, {from: policy});
+    const supply = await tracker.totalSupply.call();
     returnVal.should.be.bignumber.eq(supply);
   });
 });
 
-contract('UFragments:Rebase:Expansion', function (accounts) {
+contract('Tracker:Rebase:Expansion', function (accounts) {
   const policy = accounts[1];
   const MAX_SUPPLY = new BigNumber(2).pow(128).minus(1);
 
   describe('when totalSupply is less than MAX_SUPPLY and expands beyond', function () {
-    before('setup UFragments contract', async function () {
+    before('setup Tracker contract', async function () {
       await setupContracts();
-      await uFragments.setMonetaryPolicy(policy, {from: deployer});
-      const totalSupply = await uFragments.totalSupply.call();
-      await uFragments.rebase(1, MAX_SUPPLY.minus(totalSupply).minus(toUFrgDenomination(1)), {from: policy});
-      r = await uFragments.rebase(2, toUFrgDenomination(2), {from: policy});
+      await tracker.setMonetaryPolicy(policy, {from: deployer});
+      const totalSupply = await tracker.totalSupply.call();
+      await tracker.rebase(1, MAX_SUPPLY.minus(totalSupply).minus(toUFrgDenomination(1)), {from: policy});
+      r = await tracker.rebase(2, toUFrgDenomination(2), {from: policy});
     });
 
     it('should increase the totalSupply to MAX_SUPPLY', async function () {
-      b = await uFragments.totalSupply.call();
+      b = await tracker.totalSupply.call();
       b.should.be.bignumber.eq(MAX_SUPPLY);
     });
 
@@ -215,13 +215,13 @@ contract('UFragments:Rebase:Expansion', function (accounts) {
 
   describe('when totalSupply is MAX_SUPPLY and expands', function () {
     before(async function () {
-      b = await uFragments.totalSupply.call();
+      b = await tracker.totalSupply.call();
       b.should.be.bignumber.eq(MAX_SUPPLY);
-      r = await uFragments.rebase(3, toUFrgDenomination(2), {from: policy});
+      r = await tracker.rebase(3, toUFrgDenomination(2), {from: policy});
     });
 
     it('should NOT change the totalSupply', async function () {
-      b = await uFragments.totalSupply.call();
+      b = await tracker.totalSupply.call();
       b.should.be.bignumber.eq(MAX_SUPPLY);
     });
 
@@ -235,30 +235,30 @@ contract('UFragments:Rebase:Expansion', function (accounts) {
   });
 });
 
-contract('UFragments:Rebase:NoChange', function (accounts) {
+contract('Tracker:Rebase:NoChange', function (accounts) {
   // Rebase (0%), with starting balances A:750 and B:250.
   const A = accounts[2];
   const B = accounts[3];
   const policy = accounts[1];
 
-  before('setup UFragments contract', async function () {
+  before('setup Tracker contract', async function () {
     await setupContracts();
-    await uFragments.setMonetaryPolicy(policy, {from: deployer});
-    await uFragments.transfer(A, toUFrgDenomination(750), { from: deployer });
-    await uFragments.transfer(B, toUFrgDenomination(250), { from: deployer });
-    r = await uFragments.rebase(1, 0, {from: policy});
+    await tracker.setMonetaryPolicy(policy, {from: deployer});
+    await tracker.transfer(A, toUFrgDenomination(750), { from: deployer });
+    await tracker.transfer(B, toUFrgDenomination(250), { from: deployer });
+    r = await tracker.rebase(1, 0, {from: policy});
   });
 
   it('should NOT CHANGE the totalSupply', async function () {
-    b = await uFragments.totalSupply.call();
+    b = await tracker.totalSupply.call();
     b.should.be.bignumber.eq(initialSupply);
   });
 
   it('should NOT CHANGE individual balances', async function () {
-    b = await uFragments.balanceOf.call(A);
+    b = await tracker.balanceOf.call(A);
     b.should.be.bignumber.eq(toUFrgDenomination(750));
 
-    b = await uFragments.balanceOf.call(B);
+    b = await tracker.balanceOf.call(B);
     b.should.be.bignumber.eq(toUFrgDenomination(250));
   });
 
@@ -271,31 +271,31 @@ contract('UFragments:Rebase:NoChange', function (accounts) {
   });
 });
 
-contract('UFragments:Rebase:Contraction', function (accounts) {
+contract('Tracker:Rebase:Contraction', function (accounts) {
   // Rebase -5M (-10%), with starting balances A:750 and B:250.
   const A = accounts[2];
   const B = accounts[3];
   const policy = accounts[1];
   const rebaseAmt = INTIAL_SUPPLY / 10;
 
-  before('setup UFragments contract', async function () {
+  before('setup Tracker contract', async function () {
     await setupContracts();
-    await uFragments.setMonetaryPolicy(policy, {from: deployer});
-    await uFragments.transfer(A, toUFrgDenomination(750), { from: deployer });
-    await uFragments.transfer(B, toUFrgDenomination(250), { from: deployer });
-    r = await uFragments.rebase(1, -rebaseAmt, {from: policy});
+    await tracker.setMonetaryPolicy(policy, {from: deployer});
+    await tracker.transfer(A, toUFrgDenomination(750), { from: deployer });
+    await tracker.transfer(B, toUFrgDenomination(250), { from: deployer });
+    r = await tracker.rebase(1, -rebaseAmt, {from: policy});
   });
 
   it('should decrease the totalSupply', async function () {
-    b = await uFragments.totalSupply.call();
+    b = await tracker.totalSupply.call();
     b.should.be.bignumber.eq(initialSupply.minus(rebaseAmt));
   });
 
   it('should decrease individual balances', async function () {
-    b = await uFragments.balanceOf.call(A);
+    b = await tracker.balanceOf.call(A);
     b.should.be.bignumber.eq(toUFrgDenomination(675));
 
-    b = await uFragments.balanceOf.call(B);
+    b = await tracker.balanceOf.call(B);
     b.should.be.bignumber.eq(toUFrgDenomination(225));
   });
 
@@ -308,42 +308,42 @@ contract('UFragments:Rebase:Contraction', function (accounts) {
   });
 });
 
-contract('UFragments:Transfer', function (accounts) {
+contract('Tracker:Transfer', function (accounts) {
   const A = accounts[2];
   const B = accounts[3];
   const C = accounts[4];
 
-  before('setup UFragments contract', setupContracts);
+  before('setup Tracker contract', setupContracts);
 
   describe('deployer transfers 12 to A', function () {
     it('should have correct balances', async function () {
-      const deployerBefore = await uFragments.balanceOf.call(deployer);
-      await uFragments.transfer(A, toUFrgDenomination(12), { from: deployer });
-      b = await uFragments.balanceOf.call(deployer);
+      const deployerBefore = await tracker.balanceOf.call(deployer);
+      await tracker.transfer(A, toUFrgDenomination(12), { from: deployer });
+      b = await tracker.balanceOf.call(deployer);
       b.should.be.bignumber.eq(deployerBefore.minus(toUFrgDenomination(12)));
-      b = await uFragments.balanceOf.call(A);
+      b = await tracker.balanceOf.call(A);
       b.should.be.bignumber.eq(toUFrgDenomination(12));
     });
   });
 
   describe('deployer transfers 15 to B', async function () {
     it('should have balances [973,15]', async function () {
-      const deployerBefore = await uFragments.balanceOf.call(deployer);
-      await uFragments.transfer(B, toUFrgDenomination(15), { from: deployer });
-      b = await uFragments.balanceOf.call(deployer);
+      const deployerBefore = await tracker.balanceOf.call(deployer);
+      await tracker.transfer(B, toUFrgDenomination(15), { from: deployer });
+      b = await tracker.balanceOf.call(deployer);
       b.should.be.bignumber.eq(deployerBefore.minus(toUFrgDenomination(15)));
-      b = await uFragments.balanceOf.call(B);
+      b = await tracker.balanceOf.call(B);
       b.should.be.bignumber.eq(toUFrgDenomination(15));
     });
   });
 
   describe('deployer transfers the rest to C', async function () {
     it('should have balances [0,973]', async function () {
-      const deployerBefore = await uFragments.balanceOf.call(deployer);
-      await uFragments.transfer(C, deployerBefore, { from: deployer });
-      b = await uFragments.balanceOf.call(deployer);
+      const deployerBefore = await tracker.balanceOf.call(deployer);
+      await tracker.transfer(C, deployerBefore, { from: deployer });
+      b = await tracker.balanceOf.call(deployer);
       b.should.be.bignumber.eq(0);
-      b = await uFragments.balanceOf.call(C);
+      b = await tracker.balanceOf.call(C);
       b.should.be.bignumber.eq(deployerBefore);
     });
   });
@@ -353,13 +353,13 @@ contract('UFragments:Transfer', function (accounts) {
 
     it('reverts on transfer', async function () {
       expect(
-        await chain.isEthException(uFragments.transfer(uFragments.address, unitTokenAmount, { from: owner }))
+        await chain.isEthException(tracker.transfer(tracker.address, unitTokenAmount, { from: owner }))
       ).to.be.true;
     });
 
     it('reverts on transferFrom', async function () {
       expect(
-        await chain.isEthException(uFragments.transferFrom(owner, uFragments.address, unitTokenAmount, { from: owner }))
+        await chain.isEthException(tracker.transferFrom(owner, tracker.address, unitTokenAmount, { from: owner }))
       ).to.be.true;
     });
   });
@@ -368,7 +368,7 @@ contract('UFragments:Transfer', function (accounts) {
     const owner = A;
 
     before(async function () {
-      r = await uFragments.approve(ZERO_ADDRESS, transferAmount, { from: owner });
+      r = await tracker.approve(ZERO_ADDRESS, transferAmount, { from: owner });
     });
     it('emits an approval event', async function () {
       expect(r.logs.length).to.eq(1);
@@ -380,7 +380,7 @@ contract('UFragments:Transfer', function (accounts) {
 
     it('transferFrom should fail', async function () {
       expect(
-        await chain.isEthException(uFragments.transferFrom(owner, ZERO_ADDRESS, transferAmount, { from: C }))
+        await chain.isEthException(tracker.transferFrom(owner, ZERO_ADDRESS, transferAmount, { from: C }))
       ).to.be.true;
     });
   });
