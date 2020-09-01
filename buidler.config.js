@@ -1,8 +1,11 @@
-usePlugin("@nomiclabs/buidler-truffle5");
+require('dotenv').config();
+
+usePlugin('@nomiclabs/buidler-truffle5');
 // usePlugin('@nomiclabs/buidler-waffle');
 // usePlugin('@nomiclabs/buidler-ethers');
 usePlugin('@openzeppelin/buidler-upgrades');
 // usePlugin('buidler-spdx-license-identifier');
+usePlugin('buidler-deploy');
 
 // This is a sample Buidler task. To learn how to create your own go to
 // https://buidler.dev/guides/create-task.html
@@ -19,13 +22,32 @@ task('accounts', 'Prints the list of accounts', async () => {
 // defaultNetwork, networks, solc, and paths.
 // Go to https://buidler.dev/config/ to learn more
 module.exports = {
-  // This is a sample solc configuration that specifies which version of solc to use
+  networks: {
+    buidlerevm: {},
+    ropsten: {
+      url: process.env.ROPSTEN_URL,
+      from: process.env.ROPSTEN_FROM,
+      accounts: process.env.ROPSTEN_PRIVATE_KEYS.split(',')
+    }
+  },
   solc: {
-    version: '0.6.12',
+    version: '0.6.12'
   },
   spdxLicenseIdentifier: {
     overwrite: false,
-    runOnCompile: true,
+    runOnCompile: true
+  },
+  namedAccounts: {
+    deployer: {
+      default: 0 // here this will by default take the first account as deployer
+      // 4: '0xffffeffffff', // but for rinkeby it will be a specific address
+      // "specialnetwork": "0xf34e...", //it can also specify a specific netwotk name (specified in buidler.config.js)
+    },
+    user: {
+      default: 1 // here this will by default take the second account as user (so in the test this will be a different account than the deployer)
+      //   1: '0xffffeaaa', // on the mainnet the user could be a multi sig
+      //   4: '0xaaaeffffff', // on rinkeby it could be another account
+    }
   }
 };
 

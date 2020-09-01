@@ -2,15 +2,15 @@ const Tracker = artifacts.require('Tracker.sol');
 const _require = require('app-root-path').require;
 const BlockchainCaller = _require('/util/blockchain_caller');
 const chain = new BlockchainCaller(web3);
-const BigNumber = web3.utils.BN;
+const BN = web3.utils.BN;
 const encodeCall = require('zos-lib/lib/helpers/encodeCall').default;
 
 require('chai')
-  .use(require('chai-bignumber')(BigNumber))
+  .use(require('chai-bn')(BN))
   .should();
 
 function toUFrgDenomination (x) {
-  return new BigNumber(x).mul(10 ** DECIMALS);
+  return new BN(x).mul(10 ** DECIMALS);
 }
 const DECIMALS = 9;
 const INTIAL_SUPPLY = toUFrgDenomination(50 * 10 ** 6);
@@ -20,7 +20,7 @@ const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 let tracker, b, r, deployer, user, initialSupply;
 async function setupContracts () {
-  const accounts = await chain.getUserAccounts();
+  const accounts = await web3.eth.getAccounts();
   deployer = accounts[0];
   user = accounts[1];
   tracker = await Tracker.new();
@@ -188,7 +188,7 @@ contract('Tracker:Rebase:Expansion', function (accounts) {
 
 contract('Tracker:Rebase:Expansion', function (accounts) {
   const policy = accounts[1];
-  const MAX_SUPPLY = new BigNumber(2).pow(128).minus(1);
+  const MAX_SUPPLY = new BN(2).pow(128).minus(1);
 
   describe('when totalSupply is less than MAX_SUPPLY and expands beyond', function () {
     before('setup Tracker contract', async function () {

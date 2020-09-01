@@ -15,6 +15,9 @@ import "./lib/SafeMathInt.sol";
  *      changing the exchange rate between the hidden 'gons' and the public 'fragments'.
  */
 contract Tracker is ERC20UpgradeSafe, OwnableUpgradeSafe {
+    // `Fragment` is the "display unit" (shown in the wallet or exchange UI)
+    // `Gon` is the "accounting unit" (used for balance calculations & transfers)
+
     // PLEASE READ BEFORE CHANGING ANY ACCOUNTING OR MATH
     // Anytime there is division, there is a risk of numerical instability from rounding errors. In
     // order to minimize this risk, we adhere to the following guidelines:
@@ -45,9 +48,6 @@ contract Tracker is ERC20UpgradeSafe, OwnableUpgradeSafe {
         require(msg.sender == monetaryPolicy);
         _;
     }
-
-    bool private rebasePausedDeprecated;
-    bool private tokenPausedDeprecated;
 
     modifier validRecipient(address to) {
         require(to != address(0x0));
@@ -137,9 +137,6 @@ contract Tracker is ERC20UpgradeSafe, OwnableUpgradeSafe {
         __Ownable_init();
         __ERC20_init(name_, symbol_);
         _setupDecimals(uint8(DECIMALS));
-
-        rebasePausedDeprecated = false;
-        tokenPausedDeprecated = false;
 
         _totalSupply = INITIAL_FRAGMENTS_SUPPLY;
         _gonBalances[owner()] = TOTAL_GONS;

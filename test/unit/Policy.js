@@ -3,36 +3,35 @@ const MockTracker = artifacts.require('MockTracker.sol');
 const MockOracle = artifacts.require('MockOracle.sol');
 
 const encodeCall = require('zos-lib/lib/helpers/encodeCall').default;
-const BigNumber = web3.utils.BN;
+const BN = web3.utils.BN;
 const _require = require('app-root-path').require;
 const BlockchainCaller = _require('/util/blockchain_caller');
 const chain = new BlockchainCaller(web3);
 
 require('chai')
-  .use(require('chai-bignumber')(BigNumber))
+  .use(require('chai-bn')(BN))
   .should();
 
 let policy, mockTracker, mockMarketOracle, mockCpiOracle;
 let r, prevEpoch, prevTime;
 let deployer, user, orchestrator;
 
-const MAX_RATE = (new BigNumber('1')).mul(10 ** 6 * 10 ** 18);
-const MAX_SUPPLY = (new BigNumber(2).pow(255).minus(1)).div(MAX_RATE);
-const BASE_CPI = new BigNumber(100e18);
-const INITIAL_CPI = new BigNumber(251.712e18);
-const INITIAL_CPI_25P_MORE = INITIAL_CPI.mul(1.25).dividedToIntegerBy(1);
-const INITIAL_CPI_25P_LESS = INITIAL_CPI.mul(0.77).dividedToIntegerBy(1);
-const INITIAL_RATE = INITIAL_CPI.mul(1e18).dividedToIntegerBy(BASE_CPI);
-const INITIAL_RATE_30P_MORE = INITIAL_RATE.mul(1.3).dividedToIntegerBy(1);
-const INITIAL_RATE_30P_LESS = INITIAL_RATE.mul(0.7).dividedToIntegerBy(1);
-const INITIAL_RATE_5P_MORE = INITIAL_RATE.mul(1.05).dividedToIntegerBy(1);
-const INITIAL_RATE_5P_LESS = INITIAL_RATE.mul(0.95).dividedToIntegerBy(1);
-const INITIAL_RATE_60P_MORE = INITIAL_RATE.mul(1.6).dividedToIntegerBy(1);
-const INITIAL_RATE_2X = INITIAL_RATE.mul(2);
+const MAX_RATE = (new BN(1)).mul(new BN(10).pow(new BN(6)).mul(new BN(10).pow(new BN(18))));
+const MAX_SUPPLY = (new BN(2).pow(new BN(255)).sub(new BN(1))).div(MAX_RATE);
+const BASE_CPI = new BN(100).pow(new BN(18));
+const INITIAL_CPI = new BN('251.712').pow(new BN(18));
+const INITIAL_CPI_25P_MORE = INITIAL_CPI.mul(new BN(1.25)).divRound(new BN(1));
+const INITIAL_CPI_25P_LESS = INITIAL_CPI.mul(new BN(0.77)).divRound(new BN(1));
+const INITIAL_RATE = INITIAL_CPI.mul(new BN(1).pow(new BN(18))).divRound(BASE_CPI);
+const INITIAL_RATE_30P_MORE = INITIAL_RATE.mul(new BN(1.3)).divRound(new BN(1));
+const INITIAL_RATE_30P_LESS = INITIAL_RATE.mul(new BN(0.7)).divRound(new BN(1));
+const INITIAL_RATE_5P_MORE = INITIAL_RATE.mul(new BN(1.05)).divRound(new BN(1));
+const INITIAL_RATE_5P_LESS = INITIAL_RATE.mul(new BN(0.95)).divRound(new BN(1));
+const INITIAL_RATE_60P_MORE = INITIAL_RATE.mul(new BN(1.6)).divRound(new BN(1));
+const INITIAL_RATE_2X = INITIAL_RATE.mul(new BN(2));
 
 async function setupContracts () {
-  await chain.waitForSomeTime(86400);
-  const accounts = await chain.getUserAccounts();
+  const accounts = await web3.eth.getAccounts();
   deployer = accounts[0];
   user = accounts[1];
   orchestrator = accounts[2];
@@ -40,12 +39,7 @@ async function setupContracts () {
   mockMarketOracle = await MockOracle.new('MarketOracle');
   mockCpiOracle = await MockOracle.new('CpiOracle');
   policy = await Policy.new();
-  await policy.sendTransaction({
-    data: encodeCall('initialize', ['address', 'address', 'uint256'], [deployer, mockTracker.address, BASE_CPI.toString()]),
-    from: deployer
-  });
-  await policy.setMarketOracle(mockMarketOracle.address);
-  await policy.setCpiOracle(mockCpiOracle.address);
+  await policy.initialize(mockTracker.address);
   await policy.setOrchestrator(orchestrator);
 }
 
@@ -346,7 +340,7 @@ contract('Policy:Rebase', async function (accounts) {
     });
 
     it('should return 0', async function () {
-      await mockExternalData(INITIAL_RATE.minus(1), INITIAL_CPI, 1000);
+      await mockExternalData(INITIAL_RATE.sub(1), INITIAL_CPI, 1000);
       await chain.waitForSomeTime(60);
       r = await policy.rebase({from: orchestrator});
       r.logs[0].args.requestedSupplyAdjustment.should.be.bignumber.eq('0');
@@ -357,7 +351,7 @@ contract('Policy:Rebase', async function (accounts) {
       r.logs[0].args.requestedSupplyAdjustment.should.be.bignumber.eq('0');
       await chain.waitForSomeTime(60);
 
-      await mockExternalData(INITIAL_RATE_5P_MORE.minus(2), INITIAL_CPI, 1000);
+      await mockExternalData(INITIAL_RATE_5P_MORE.sub(2), INITIAL_CPI, 1000);
       r = await policy.rebase({from: orchestrator});
       r.logs[0].args.requestedSupplyAdjustment.should.be.bignumber.eq('0');
       await chain.waitForSomeTime(60);
@@ -401,7 +395,7 @@ contract('Policy:Rebase', async function (accounts) {
 
   describe('when tracker grows beyond MAX_SUPPLY', function () {
     before(async function () {
-      await mockExternalData(INITIAL_RATE_2X, INITIAL_CPI, MAX_SUPPLY.minus(1));
+      await mockExternalData(INITIAL_RATE_2X, INITIAL_CPI, MAX_SUPPLY.sub(1));
       await chain.waitForSomeTime(60);
     });
 
@@ -501,7 +495,7 @@ contract('Policy:Rebase', async function (accounts) {
 
     it('should update lastRebaseTimestamp', async function () {
       const time = await policy.lastRebaseTimestampSec.call();
-      expect(time.minus(prevTime).eq(60)).to.be.true;
+      expect(time.sub(prevTime).eq(60)).to.be.true;
     });
 
     it('should emit Rebase with positive requestedSupplyAdjustment', async function () {
@@ -627,14 +621,14 @@ contract('Policy:Rebase', async function (accounts) {
     rbTime = await policy.rebaseWindowOffsetSec.call();
     rbWindow = await policy.rebaseWindowLengthSec.call();
     minRebaseTimeIntervalSec = await policy.minRebaseTimeIntervalSec.call();
-    now = new BigNumber(await chain.currentTime());
-    prevRebaseTime = now.minus(now.mod(minRebaseTimeIntervalSec)).plus(rbTime);
+    now = new BN(await chain.currentTime());
+    prevRebaseTime = now.sub(now.mod(minRebaseTimeIntervalSec)).plus(rbTime);
     nextRebaseWindowOpenTime = prevRebaseTime.plus(minRebaseTimeIntervalSec);
   });
 
   describe('when its 5s after the rebase window closes', function () {
     it('should fail', async function () {
-      timeToWait = nextRebaseWindowOpenTime.minus(now).plus(rbWindow).plus(5);
+      timeToWait = nextRebaseWindowOpenTime.sub(now).plus(rbWindow).plus(5);
       await chain.waitForSomeTime(timeToWait.toNumber());
       await mockExternalData(INITIAL_RATE, INITIAL_CPI, 1000);
       expect(await policy.inRebaseWindow.call()).to.be.false;
@@ -646,7 +640,7 @@ contract('Policy:Rebase', async function (accounts) {
 
   describe('when its 5s before the rebase window opens', function () {
     it('should fail', async function () {
-      timeToWait = nextRebaseWindowOpenTime.minus(now).minus(5);
+      timeToWait = nextRebaseWindowOpenTime.sub(now).sub(5);
       await chain.waitForSomeTime(timeToWait.toNumber());
       await mockExternalData(INITIAL_RATE, INITIAL_CPI, 1000);
       expect(await policy.inRebaseWindow.call()).to.be.false;
@@ -658,7 +652,7 @@ contract('Policy:Rebase', async function (accounts) {
 
   describe('when its 5s after the rebase window opens', function () {
     it('should NOT fail', async function () {
-      timeToWait = nextRebaseWindowOpenTime.minus(now).plus(5);
+      timeToWait = nextRebaseWindowOpenTime.sub(now).plus(5);
       await chain.waitForSomeTime(timeToWait.toNumber());
       await mockExternalData(INITIAL_RATE, INITIAL_CPI, 1000);
       expect(await policy.inRebaseWindow.call()).to.be.true;
@@ -672,7 +666,7 @@ contract('Policy:Rebase', async function (accounts) {
 
   describe('when its 5s before the rebase window closes', function () {
     it('should NOT fail', async function () {
-      timeToWait = nextRebaseWindowOpenTime.minus(now).plus(rbWindow).minus(5);
+      timeToWait = nextRebaseWindowOpenTime.sub(now).plus(rbWindow).sub(5);
       await chain.waitForSomeTime(timeToWait.toNumber());
       await mockExternalData(INITIAL_RATE, INITIAL_CPI, 1000);
       expect(await policy.inRebaseWindow.call()).to.be.true;

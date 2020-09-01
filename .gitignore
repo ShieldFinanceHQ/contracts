@@ -79,6 +79,12 @@ coverageEnv/
 
 node_modules
 
-#Buidler files
+# Buidler files
 cache
 artifacts
+contractsInfo.json
+deployments/buidlerevm*
+deployments/localhost*
+
+# dotenv
+.env

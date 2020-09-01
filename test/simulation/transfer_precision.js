@@ -93,7 +93,7 @@ async function exec () {
 
     preRebaseSupply = await tracker.totalSupply.call();
     inflation = trackerGrowth.next().toFixed(5);
-    rebaseAmt = preRebaseSupply.mul(inflation).dividedToIntegerBy(1);
+    rebaseAmt = preRebaseSupply.mul(inflation).divRound(1);
   } while ((await tracker.totalSupply.call()).plus(rebaseAmt).lt(endSupply));
 }
 

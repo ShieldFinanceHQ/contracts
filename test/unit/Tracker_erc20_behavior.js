@@ -30,16 +30,16 @@ const Tracker = artifacts.require('Tracker.sol');
 const _require = require('app-root-path').require;
 const BlockchainCaller = _require('/util/blockchain_caller');
 const chain = new BlockchainCaller(web3);
-const BigNumber = web3.utils.BN;
+const BN = web3.utils.BN;
 const encodeCall = require('zos-lib/lib/helpers/encodeCall').default;
 
 require('chai')
-  .use(require('chai-bignumber')(BigNumber))
+  .use(require('chai-bn')(BN))
   .should();
 
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 function toTokenDenomination (x) {
-  return new BigNumber(x).mul(10 ** DECIMALS);
+  return new BN(x).mul(10 ** DECIMALS);
 }
 const DECIMALS = 9;
 const INITIAL_SUPPLY = toTokenDenomination(50 * 10 ** 6);

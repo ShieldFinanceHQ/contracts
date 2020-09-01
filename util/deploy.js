@@ -7,7 +7,7 @@ const BigNumber = web3.utils.BN;
 // Import dependencies from OpenZeppelin SDK programmatic library
 const { Contracts, ProxyAdminProject, SimpleProject, ZWeb3 } = require('@openzeppelin/upgrades');
 
-async function main() {
+async function main () {
   /* Initialize OpenZeppelin's Web3 provider. */
   ZWeb3.initialize(web3.currentProvider);
 

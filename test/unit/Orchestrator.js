@@ -20,7 +20,7 @@ let orchestrator, mockPolicy, mockDownstream;
 let r;
 let deployer, user;
 
-async function setupContracts() {
+async function setupContracts () {
   // await chain.waitForSomeTime(86400)
   const accounts = await web3.eth.getAccounts();
   deployer = accounts[0];

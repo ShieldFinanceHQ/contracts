@@ -1,16 +1,16 @@
 const UInt256LibMock = artifacts.require('UInt256LibMock');
 
-const BigNumber = web3.utils.BN;
+const BN = web3.utils.BN;
 const _require = require('app-root-path').require;
 const BlockchainCaller = _require('/util/blockchain_caller');
 const chain = new BlockchainCaller(web3);
 
 require('chai')
-  .use(require('chai-bignumber')(BigNumber))
+  .use(require('chai-bn')(BN))
   .should();
 
 contract('UInt256Lib', () => {
-  const MAX_INT256 = new BigNumber(2).pow(255).minus(1);
+  const MAX_INT256 = new BN(2).pow(255).minus(1);
 
   let UInt256Lib;
 

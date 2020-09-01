@@ -19,7 +19,7 @@ const BigNumber = web3.utils.BN;
 
 console.log('web3.utils.BN', web3.utils.BN);
 
-const endSupply = new BigNumber("2").pow(new BigNumber(128)).minus(new BigNumber(1));
+const endSupply = new BigNumber('2').pow(new BigNumber(128)).minus(new BigNumber(1));
 
 let tracker, preRebaseSupply, postRebaseSupply;
 preRebaseSupply = new BigNumber(0);

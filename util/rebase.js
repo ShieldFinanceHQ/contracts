@@ -8,7 +8,7 @@ const DECIMALS = new BigNumber(1e18);
 // Import dependencies from OpenZeppelin SDK programmatic library
 const { Contracts, ProxyAdminProject, SimpleProject, ZWeb3 } = require('@openzeppelin/upgrades');
 
-async function main(UFragmentsInstanceAddress, UFragmentsPolicyInstanceAddress, OrchestratorInstanceAddress, currentRate, targetRate) {
+async function main (UFragmentsInstanceAddress, UFragmentsPolicyInstanceAddress, OrchestratorInstanceAddress, currentRate, targetRate) {
   /* Initialize OpenZeppelin's Web3 provider. */
   ZWeb3.initialize(web3.currentProvider);
 
