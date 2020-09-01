@@ -2,7 +2,7 @@
 global.artifacts = artifacts;
 global.web3 = web3;
 
-const BigNumber = web3.BigNumber;
+const BigNumber = web3.utils.BN;
 
 // Import dependencies from OpenZeppelin SDK programmatic library
 const { Contracts, ProxyAdminProject, SimpleProject, ZWeb3 } = require('@openzeppelin/upgrades');

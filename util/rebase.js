@@ -2,7 +2,7 @@
 global.artifacts = artifacts;
 global.web3 = web3;
 
-const BigNumber = web3.BigNumber;
+const BigNumber = web3.utils.BN;
 const DECIMALS = new BigNumber(1e18);
 
 // Import dependencies from OpenZeppelin SDK programmatic library

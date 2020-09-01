@@ -23,6 +23,7 @@
     "lint": "npx eslint ./scripts ./test ./util *.js --cache --fix && npx solhint ./contracts/*.sol ./contracts/*/*.sol",
     "flatten": "npx truffle-flattener ./contracts/*.sol > /tmp/Flat.sol && xclip -sel c < /tmp/Flat.sol",
     "test": "./scripts/test.sh",
+    "dev": "nodemon -i cache -e js,json,sol -x 'buidler --show-stack-traces test test/unit/Orchestrator.js'",
     "deploy:ganache": "npx truffle compile --reset && npx truffle exec --network ganacheUnitTest util/deploy.js",
     "verify:ganache": "npx truffle exec --network ganacheUnitTest util/verify.js",
     "rebase:ganache": "npx truffle exec --network ganacheUnitTest util/rebase.js"
@@ -34,7 +35,7 @@
     ]
   },
   "engines": {
-    "node": "^12.18.0"
+    "node": "^10.22.0"
   },
   "dependencies": {
     "@openzeppelin/contracts-ethereum-package": "^3.0.0",
@@ -53,9 +54,11 @@
     "@openzeppelin/cli": "^2.8.2",
     "@openzeppelin/test-environment": "^0.1.2",
     "@openzeppelin/test-helpers": "^0.5.4",
+    "@openzeppelin/truffle-upgrades": "^1.0.1",
     "buidler-spdx-license-identifier": "^1.0.3",
     "chai": "^4.2.0",
     "chai-bignumber": "^2.0.2",
+    "chai-bn": "^0.2.1",
     "coveralls": "^3.0.2",
     "eslint": "^4.19.1",
     "eslint-config-google": "^0.9.1",

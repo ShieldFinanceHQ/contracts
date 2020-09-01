@@ -55,7 +55,6 @@ contract Orchestrator is OwnableUpgradeSafe {
         onlyOwner
         returns (uint256)
     {
-        console.log("Rebasing: ", msg.sender, tx.origin);
         require(msg.sender == tx.origin);  // solhint-disable-line avoid-tx-origin
 
         uint256 supplyAfterRebase = policy.rebase(_storedCurrentRate, _storedTargetRate);
@@ -100,15 +99,12 @@ contract Orchestrator is OwnableUpgradeSafe {
         onlyOwner
     {
         require(index < transactions.length, "index out of bounds");
-        Transaction[] storage _transactions;
 
-        for (uint i = 0; i < transactions.length; i++) {
-            if (i != index) {
-                _transactions.push(transactions[i]);
-            }
+        // Clever removal algorithm that saves gas
+        for (uint i = index; i < transactions.length - 1; i++) {
+            transactions[i] = transactions[i + 1];
         }
-
-        transactions = _transactions;
+        transactions.pop();
     }
 
     /**
@@ -126,7 +122,7 @@ contract Orchestrator is OwnableUpgradeSafe {
     /**
      * @return Number of transactions, both enabled and disabled, in transactions list.
      */
-    function transactionsSize()
+    function transactionsLength()
         external
         view
         returns (uint256)

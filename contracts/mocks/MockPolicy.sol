@@ -5,13 +5,16 @@ pragma solidity ^0.6.0;
 import "./Mock.sol";
 
 
-contract MockUFragmentsPolicy is Mock {
+contract MockPolicy is Mock {
 
-    function rebase()
+    function rebase(uint256 _storedCurrentRate, uint256 _storedTargetRate)
         external
         returns (uint256)
     {
-        emit FunctionCalled("UFragmentsPolicy", "rebase", msg.sender);
+        // prevent compiler warnings about unused vars
+        _storedCurrentRate;
+        _storedTargetRate;
+        emit FunctionCalled("Policy", "rebase", msg.sender);
         return 0;
     }
 }

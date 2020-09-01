@@ -2,7 +2,7 @@ const Tracker = artifacts.require('Tracker.sol');
 const _require = require('app-root-path').require;
 const BlockchainCaller = _require('/util/blockchain_caller');
 const chain = new BlockchainCaller(web3);
-const BigNumber = web3.BigNumber;
+const BigNumber = web3.utils.BN;
 const encodeCall = require('zos-lib/lib/helpers/encodeCall').default;
 
 require('chai')
@@ -174,7 +174,7 @@ contract('Tracker:Rebase:Expansion', function (accounts) {
     const log = r.logs[0];
     expect(log).to.exist;
     expect(log.event).to.eq('LogRebase');
-    log.args.epoch.should.be.bignumber.eq(1);
+    log.args.epoch.should.be.bignumber.eq('1');
     log.args.totalSupply.should.be.bignumber.eq(initialSupply.plus(rebaseAmt));
   });
 
@@ -266,7 +266,7 @@ contract('Tracker:Rebase:NoChange', function (accounts) {
     const log = r.logs[0];
     expect(log).to.exist;
     expect(log.event).to.eq('LogRebase');
-    log.args.epoch.should.be.bignumber.eq(1);
+    log.args.epoch.should.be.bignumber.eq('1');
     log.args.totalSupply.should.be.bignumber.eq(initialSupply);
   });
 });
@@ -303,7 +303,7 @@ contract('Tracker:Rebase:Contraction', function (accounts) {
     const log = r.logs[0];
     expect(log).to.exist;
     expect(log.event).to.eq('LogRebase');
-    log.args.epoch.should.be.bignumber.eq(1);
+    log.args.epoch.should.be.bignumber.eq('1');
     log.args.totalSupply.should.be.bignumber.eq(initialSupply.minus(rebaseAmt));
   });
 });
@@ -342,7 +342,7 @@ contract('Tracker:Transfer', function (accounts) {
       const deployerBefore = await tracker.balanceOf.call(deployer);
       await tracker.transfer(C, deployerBefore, { from: deployer });
       b = await tracker.balanceOf.call(deployer);
-      b.should.be.bignumber.eq(0);
+      b.should.be.bignumber.eq('0');
       b = await tracker.balanceOf.call(C);
       b.should.be.bignumber.eq(deployerBefore);
     });

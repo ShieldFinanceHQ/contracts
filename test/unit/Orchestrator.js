@@ -1,40 +1,45 @@
+// const { deployProxy, upgradeProxy } = require('@openzeppelin/truffle-upgrades');
+
 const MockDownstream = artifacts.require('MockDownstream.sol');
 const MockPolicy = artifacts.require('MockPolicy.sol');
 const Orchestrator = artifacts.require('Orchestrator.sol');
 const RebaseCallerContract = artifacts.require('RebaseCallerContract.sol');
 const ConstructorRebaseCallerContract = artifacts.require('ConstructorRebaseCallerContract.sol');
 
-const BigNumber = web3.BigNumber;
+const BN = web3.utils.BN;
 const _require = require('app-root-path').require;
 const BlockchainCaller = _require('/util/blockchain_caller');
 const chain = new BlockchainCaller(web3);
-const {expectRevert} = require('@openzeppelin/test-helpers');
+const { expectRevert } = require('@openzeppelin/test-helpers');
 
 require('chai')
-  .use(require('chai-bignumber')(BigNumber))
+  .use(require('chai-bn')(BN))
   .should();
 
 let orchestrator, mockPolicy, mockDownstream;
 let r;
 let deployer, user;
 
-async function setupContracts () {
-  await chain.waitForSomeTime(86400);
-  const accounts = await chain.getUserAccounts();
+async function setupContracts() {
+  // await chain.waitForSomeTime(86400)
+  const accounts = await web3.eth.getAccounts();
   deployer = accounts[0];
   user = accounts[1];
   mockPolicy = await MockPolicy.new();
-  orchestrator = await Orchestrator.new(deployer, mockPolicy.address);
+  orchestrator = await Orchestrator.new();
   mockDownstream = await MockDownstream.new();
+  await orchestrator.initialize(mockPolicy.address);
+  // [mockPolicy.address], { unsafeAllowCustomTypes: true });
 }
 
 contract('Orchestrator', function (accounts) {
-  before('setup Orchestrator contract', setupContracts);
+  // NOTE: The deployed contracts are reused (before function runs only once)
+  beforeEach('setup Orchestrator contract', setupContracts);
 
   describe('when sent ether', async function () {
     it('should reject', async function () {
       expect(
-        await chain.isEthException(orchestrator.sendTransaction({ from: user, value: 1 }))
+        await chain.isEthException(orchestrator.sendTransaction({ from: user, value: 1 })),
       ).to.be.true;
     });
   });
@@ -43,7 +48,7 @@ contract('Orchestrator', function (accounts) {
     it('should fail', async function () {
       const rebaseCallerContract = await RebaseCallerContract.new();
       expect(
-        await chain.isEthException(rebaseCallerContract.callRebase(orchestrator.address))
+        await chain.isEthException(rebaseCallerContract.callRebase(orchestrator.address)),
       ).to.be.true;
     });
   });
@@ -51,294 +56,324 @@ contract('Orchestrator', function (accounts) {
   describe('when rebase called by a contract which is being constructed', function () {
     it('should fail', async function () {
       expect(
-        await chain.isEthException(ConstructorRebaseCallerContract.new(orchestrator.address))
+        await chain.isEthException(ConstructorRebaseCallerContract.new(orchestrator.address)),
       ).to.be.true;
     });
   });
 
   describe('when transaction list is empty', async function () {
-    before('calling rebase', async function () {
-      r = await debug(orchestrator.rebase(653313740501264965, 653313740501264965));
+    beforeEach('calling rebase', async function () {
+      r = await orchestrator.rebase(new BN('653313740501264965'), new BN('653313740501264965'));
     });
 
-
     it('should have no transactions', async function () {
-      (await orchestrator.transactionsSize.call()).should.be.bignumber.eq(0);
+      (await orchestrator.transactionsLength.call()).should.be.bignumber.eq('0');
     });
 
     it('should call rebase on policy', async function () {
-      const fnCalled = mockPolicy.FunctionCalled().formatter(r.receipt.logs[0]);
-      expect(fnCalled.args.instanceName).to.eq('Policy');
-      expect(fnCalled.args.functionName).to.eq('rebase');
-      expect(fnCalled.args.caller).to.eq(orchestrator.address);
+      const events = await mockPolicy.contract.getPastEvents();
+      expect(events[0].event).to.eq('FunctionCalled');
+      expect(events[0].returnValues.instanceName).to.eq('Policy');
+      expect(events[0].returnValues.functionName).to.eq('rebase');
+      expect(events[0].returnValues.caller).to.eq(orchestrator.address);
     });
 
     it('should not have any subsequent logs', async function () {
-      expect(r.receipt.logs.length).to.eq(1);
+      expect(r.receipt.rawLogs.length).to.eq(1);
     });
   });
 
   describe('when there is a single transaction', async function () {
-    before('adding a transaction', async function () {
-      const updateOneArgEncoded = mockDownstream.contract.updateOneArg.getData(12345);
-      orchestrator.addTransaction(mockDownstream.address, updateOneArgEncoded, {from: deployer});
-      r = await orchestrator.rebase(653313740501264965, 653313740501264965);
+    beforeEach('adding a transaction', async function () {
+      const updateOneArgEncoded = mockDownstream.contract.methods.updateOneArg(12345).encodeABI();
+      orchestrator.addTransaction(mockDownstream.address, updateOneArgEncoded, { from: deployer });
+      r = await orchestrator.rebase(new BN('653313740501264965'), new BN('653313740501264965'));
     });
 
     it('should have 1 transaction', async function () {
-      (await orchestrator.transactionsSize.call()).should.be.bignumber.eq(1);
+      (await orchestrator.transactionsLength.call()).should.be.bignumber.eq('1');
     });
 
     it('should call rebase on policy', async function () {
-      const fnCalled = mockPolicy.FunctionCalled().formatter(r.receipt.logs[0]);
-      expect(fnCalled.args.instanceName).to.eq('Policy');
-      expect(fnCalled.args.functionName).to.eq('rebase');
-      expect(fnCalled.args.caller).to.eq(orchestrator.address);
+      const events = await mockPolicy.contract.getPastEvents();
+      expect(events[0].event).to.eq('FunctionCalled');
+      expect(events[0].returnValues.instanceName).to.eq('Policy');
+      expect(events[0].returnValues.functionName).to.eq('rebase');
+      expect(events[0].returnValues.caller).to.eq(orchestrator.address);
     });
 
     it('should call the transaction', async function () {
-      const fnCalled = mockDownstream.FunctionCalled().formatter(r.receipt.logs[1]);
-      expect(fnCalled.args.instanceName).to.eq('MockDownstream');
-      expect(fnCalled.args.functionName).to.eq('updateOneArg');
-      expect(fnCalled.args.caller).to.eq(orchestrator.address);
-
-      const fnArgs = mockDownstream.FunctionArguments().formatter(r.receipt.logs[2]);
-      const parsedFnArgs = Object.keys(fnArgs.args).reduce((m, k) => {
-        return fnArgs.args[k].map(d => d.toNumber()).concat(m);
-      }, [ ]);
-      expect(parsedFnArgs).to.eql([12345]);
+      const events = await mockDownstream.contract.getPastEvents();
+      expect(events[0].event).to.eq('FunctionCalled');
+      expect(events[0].returnValues.instanceName).to.eq('MockDownstream');
+      expect(events[0].returnValues.functionName).to.eq('updateOneArg');
+      expect(events[0].returnValues.caller).to.eq(orchestrator.address);
+      expect(events[1].event).to.eq('FunctionArguments');
+      expect(events[1].returnValues.uintVals).to.deep.eq(['12345']);
+      expect(events[1].returnValues.intVals).to.deep.eq([]);
     });
 
     it('should not have any subsequent logs', async function () {
-      expect(r.receipt.logs.length).to.eq(3);
+      expect(r.receipt.rawLogs.length).to.eq(3);
     });
   });
 
   describe('when there are two transactions', async function () {
-    before('adding a transaction', async function () {
-      const updateTwoArgsEncoded = mockDownstream.contract.updateTwoArgs.getData(12345, 23456);
-      orchestrator.addTransaction(mockDownstream.address, updateTwoArgsEncoded, {from: deployer});
-      r = await orchestrator.rebase(653313740501264965, 653313740501264965);
+    beforeEach('adding a transaction', async function () {
+      const updateOneArgEncoded = mockDownstream.contract.methods.updateOneArg(12345).encodeABI();
+      orchestrator.addTransaction(mockDownstream.address, updateOneArgEncoded, { from: deployer });
+      const updateTwoArgsEncoded = mockDownstream.contract.methods.updateTwoArgs(12345, 23456).encodeABI();
+      orchestrator.addTransaction(mockDownstream.address, updateTwoArgsEncoded, { from: deployer });
+      r = await orchestrator.rebase(new BN('653313740501264965'), new BN('653313740501264965'));
     });
 
     it('should have 2 transactions', async function () {
-      (await orchestrator.transactionsSize.call()).should.be.bignumber.eq(2);
+      (await orchestrator.transactionsLength.call()).should.be.bignumber.eq('2');
     });
 
     it('should call rebase on policy', async function () {
-      const fnCalled = mockPolicy.FunctionCalled().formatter(r.receipt.logs[0]);
-      expect(fnCalled.args.instanceName).to.eq('Policy');
-      expect(fnCalled.args.functionName).to.eq('rebase');
-      expect(fnCalled.args.caller).to.eq(orchestrator.address);
+      const events = await mockPolicy.contract.getPastEvents();
+      expect(events[0].event).to.eq('FunctionCalled');
+      expect(events[0].returnValues.instanceName).to.eq('Policy');
+      expect(events[0].returnValues.functionName).to.eq('rebase');
+      expect(events[0].returnValues.caller).to.eq(orchestrator.address);
     });
 
-    it('should call first transaction', async function () {
-      const fnCalled = mockDownstream.FunctionCalled().formatter(r.receipt.logs[1]);
-      expect(fnCalled.args.instanceName).to.eq('MockDownstream');
-      expect(fnCalled.args.functionName).to.eq('updateOneArg');
-      expect(fnCalled.args.caller).to.eq(orchestrator.address);
+    it('should call both transactions', async function () {
+      const events = await mockDownstream.contract.getPastEvents();
+      expect(events[0].event).to.eq('FunctionCalled');
+      expect(events[0].returnValues.instanceName).to.eq('MockDownstream');
+      expect(events[0].returnValues.functionName).to.eq('updateOneArg');
+      expect(events[0].returnValues.caller).to.eq(orchestrator.address);
+      expect(events[1].event).to.eq('FunctionArguments');
+      expect(events[1].returnValues.uintVals).to.deep.eq(['12345']);
+      expect(events[1].returnValues.intVals).to.deep.eq([]);
 
-      const fnArgs = mockDownstream.FunctionArguments().formatter(r.receipt.logs[2]);
-      const parsedFnArgs = Object.keys(fnArgs.args).reduce((m, k) => {
-        return fnArgs.args[k].map(d => d.toNumber()).concat(m);
-      }, [ ]);
-      expect(parsedFnArgs).to.eql([12345]);
-    });
-
-    it('should call second transaction', async function () {
-      const fnCalled = mockDownstream.FunctionCalled().formatter(r.receipt.logs[3]);
-      expect(fnCalled.args.instanceName).to.eq('MockDownstream');
-      expect(fnCalled.args.functionName).to.eq('updateTwoArgs');
-      expect(fnCalled.args.caller).to.eq(orchestrator.address);
-
-      const fnArgs = mockDownstream.FunctionArguments().formatter(r.receipt.logs[4]);
-      const parsedFnArgs = Object.keys(fnArgs.args).reduce((m, k) => {
-        return fnArgs.args[k].map(d => d.toNumber()).concat(m);
-      }, [ ]);
-      expect(parsedFnArgs).to.eql([23456, 12345]);
+      expect(events[2].event).to.eq('FunctionCalled');
+      expect(events[2].returnValues.instanceName).to.eq('MockDownstream');
+      expect(events[2].returnValues.functionName).to.eq('updateTwoArgs');
+      expect(events[2].returnValues.caller).to.eq(orchestrator.address);
+      expect(events[3].event).to.eq('FunctionArguments');
+      expect(events[3].returnValues.uintVals).to.deep.eq(['12345']);
+      expect(events[3].returnValues.intVals).to.deep.eq(['23456']);
     });
 
     it('should not have any subsequent logs', async function () {
-      expect(r.receipt.logs.length).to.eq(5);
+      expect(r.receipt.rawLogs.length).to.eq(5);
     });
   });
 
   describe('when 1st transaction is disabled', async function () {
-    before('disabling a transaction', async function () {
-      orchestrator.setTransactionEnabled(0, false);
-      r = await orchestrator.rebase(653313740501264965, 653313740501264965);
+    beforeEach('disabling a transaction', async function () {
+      const updateOneArgEncoded = mockDownstream.contract.methods.updateOneArg(12345).encodeABI();
+      await orchestrator.addTransaction(mockDownstream.address, updateOneArgEncoded, { from: deployer });
+      const updateTwoArgsEncoded = mockDownstream.contract.methods.updateTwoArgs(12345, 23456).encodeABI();
+      await orchestrator.addTransaction(mockDownstream.address, updateTwoArgsEncoded, { from: deployer });
+      await orchestrator.setTransactionEnabled(0, false);
+      r = await orchestrator.rebase(new BN('653313740501264965'), new BN('653313740501264965'));
     });
 
     it('should have 2 transactions', async function () {
-      (await orchestrator.transactionsSize.call()).should.be.bignumber.eq(2);
+      (await orchestrator.transactionsLength.call()).should.be.bignumber.eq('2');
     });
 
     it('should call rebase on policy', async function () {
-      const fnCalled = mockPolicy.FunctionCalled().formatter(r.receipt.logs[0]);
-      expect(fnCalled.args.instanceName).to.eq('Policy');
-      expect(fnCalled.args.functionName).to.eq('rebase');
-      expect(fnCalled.args.caller).to.eq(orchestrator.address);
+      const events = await mockPolicy.contract.getPastEvents();
+      expect(events[0].event).to.eq('FunctionCalled');
+      expect(events[0].returnValues.instanceName).to.eq('Policy');
+      expect(events[0].returnValues.functionName).to.eq('rebase');
+      expect(events[0].returnValues.caller).to.eq(orchestrator.address);
     });
 
     it('should call second transaction', async function () {
-      const fnCalled = mockDownstream.FunctionCalled().formatter(r.receipt.logs[1]);
-      expect(fnCalled.args.instanceName).to.eq('MockDownstream');
-      expect(fnCalled.args.functionName).to.eq('updateTwoArgs');
-      expect(fnCalled.args.caller).to.eq(orchestrator.address);
+      const events = await mockDownstream.contract.getPastEvents();
 
-      const fnArgs = mockDownstream.FunctionArguments().formatter(r.receipt.logs[2]);
-      const parsedFnArgs = Object.keys(fnArgs.args).reduce((m, k) => {
-        return fnArgs.args[k].map(d => d.toNumber()).concat(m);
-      }, [ ]);
-      expect(parsedFnArgs).to.eql([23456, 12345]);
+      expect(events[0].event).to.eq('FunctionCalled');
+      expect(events[0].returnValues.instanceName).to.eq('MockDownstream');
+      expect(events[0].returnValues.functionName).to.eq('updateTwoArgs');
+      expect(events[0].returnValues.caller).to.eq(orchestrator.address);
+
+      expect(events[1].event).to.eq('FunctionArguments');
+      expect(events[1].returnValues.uintVals).to.deep.eq(['12345']);
+      expect(events[1].returnValues.intVals).to.deep.eq(['23456']);
     });
 
     it('should not have any subsequent logs', async function () {
-      expect(r.receipt.logs.length).to.eq(3);
+      expect(r.receipt.rawLogs.length).to.eq(3);
     });
   });
 
   describe('when a transaction is removed', async function () {
-    before('removing 1st transaction', async function () {
-      orchestrator.removeTransaction(0);
-      r = await orchestrator.rebase(653313740501264965, 653313740501264965);
+    beforeEach('removing 1st transaction', async function () {
+      const updateOneArgEncoded = mockDownstream.contract.methods.updateOneArg(12345).encodeABI();
+      orchestrator.addTransaction(mockDownstream.address, updateOneArgEncoded, { from: deployer });
+      const updateTwoArgsEncoded = mockDownstream.contract.methods.updateTwoArgs(12345, 23456).encodeABI();
+      orchestrator.addTransaction(mockDownstream.address, updateTwoArgsEncoded, { from: deployer });
+      await orchestrator.removeTransaction(0);
+      r = await orchestrator.rebase(new BN('653313740501264965'), new BN('653313740501264965'));
     });
 
     it('should have 1 transaction', async function () {
-      (await orchestrator.transactionsSize.call()).should.be.bignumber.eq(1);
+      (await orchestrator.transactionsLength.call()).should.be.bignumber.eq('1');
     });
 
     it('should call rebase on policy', async function () {
-      const fnCalled = mockPolicy.FunctionCalled().formatter(r.receipt.logs[0]);
-      expect(fnCalled.args.instanceName).to.eq('Policy');
-      expect(fnCalled.args.functionName).to.eq('rebase');
-      expect(fnCalled.args.caller).to.eq(orchestrator.address);
+      const events = await mockPolicy.contract.getPastEvents();
+      expect(events[0].event).to.eq('FunctionCalled');
+      expect(events[0].returnValues.instanceName).to.eq('Policy');
+      expect(events[0].returnValues.functionName).to.eq('rebase');
+      expect(events[0].returnValues.caller).to.eq(orchestrator.address);
     });
 
     it('should call the transaction', async function () {
-      const fnCalled = mockDownstream.FunctionCalled().formatter(r.receipt.logs[1]);
-      expect(fnCalled.args.instanceName).to.eq('MockDownstream');
-      expect(fnCalled.args.functionName).to.eq('updateTwoArgs');
-      expect(fnCalled.args.caller).to.eq(orchestrator.address);
+      const events = await mockDownstream.contract.getPastEvents();
 
-      const fnArgs = mockDownstream.FunctionArguments().formatter(r.receipt.logs[2]);
-      const parsedFnArgs = Object.keys(fnArgs.args).reduce((m, k) => {
-        return fnArgs.args[k].map(d => d.toNumber()).concat(m);
-      }, [ ]);
-      expect(parsedFnArgs).to.eql([23456, 12345]);
+      expect(events[0].event).to.eq('FunctionCalled');
+      expect(events[0].returnValues.instanceName).to.eq('MockDownstream');
+      expect(events[0].returnValues.functionName).to.eq('updateTwoArgs');
+      expect(events[0].returnValues.caller).to.eq(orchestrator.address);
+
+      expect(events[1].event).to.eq('FunctionArguments');
+      expect(events[1].returnValues.uintVals).to.deep.eq(['12345']);
+      expect(events[1].returnValues.intVals).to.deep.eq(['23456']);
     });
 
     it('should not have any subsequent logs', async function () {
-      expect(r.receipt.logs.length).to.eq(3);
+      expect(r.receipt.rawLogs.length).to.eq(3);
     });
   });
 
   describe('when all transactions are removed', async function () {
-    before('removing 1st transaction', async function () {
-      orchestrator.removeTransaction(0);
-      r = await orchestrator.rebase(653313740501264965, 653313740501264965);
+    beforeEach('removing 1st transaction', async function () {
+      // orchestrator.removeTransaction(0);
+      r = await orchestrator.rebase(new BN('653313740501264965'), new BN('653313740501264965'));
     });
 
     it('should have 0 transactions', async function () {
-      (await orchestrator.transactionsSize.call()).should.be.bignumber.eq(0);
+      (await orchestrator.transactionsLength.call()).should.be.bignumber.eq('0');
     });
 
     it('should call rebase on policy', async function () {
-      const fnCalled = mockPolicy.FunctionCalled().formatter(r.receipt.logs[0]);
-      expect(fnCalled.args.instanceName).to.eq('Policy');
-      expect(fnCalled.args.functionName).to.eq('rebase');
-      expect(fnCalled.args.caller).to.eq(orchestrator.address);
+      const events = await mockPolicy.contract.getPastEvents();
+      expect(events[0].event).to.eq('FunctionCalled');
+      expect(events[0].returnValues.instanceName).to.eq('Policy');
+      expect(events[0].returnValues.functionName).to.eq('rebase');
+      expect(events[0].returnValues.caller).to.eq(orchestrator.address);
     });
 
     it('should not have any subsequent logs', async function () {
-      expect(r.receipt.logs.length).to.eq(1);
+      expect(r.receipt.rawLogs.length).to.eq(1);
     });
   });
 
   describe('when a transaction reverts', async function () {
-    before('adding 3 transactions', async function () {
-      const updateOneArgEncoded = mockDownstream.contract.updateOneArg.getData(123);
-      orchestrator.addTransaction(mockDownstream.address, updateOneArgEncoded, {from: deployer});
+    beforeEach('adding 3 transactions', async function () {
+      const updateOneArgEncoded = mockDownstream.contract.methods.updateOneArg(123).encodeABI();
+      orchestrator.addTransaction(mockDownstream.address, updateOneArgEncoded, { from: deployer });
 
-      const revertsEncoded = mockDownstream.contract.reverts.getData();
-      orchestrator.addTransaction(mockDownstream.address, revertsEncoded, {from: deployer});
+      const revertsEncoded = mockDownstream.contract.methods.reverts().encodeABI();
+      orchestrator.addTransaction(mockDownstream.address, revertsEncoded, { from: deployer });
 
-      const updateTwoArgsEncoded = mockDownstream.contract.updateTwoArgs.getData(12345, 23456);
-      orchestrator.addTransaction(mockDownstream.address, updateTwoArgsEncoded, {from: deployer});
-      await expectRevert.unspecified(orchestrator.rebase(653313740501264965, 653313740501264965));
+      const updateTwoArgsEncoded = mockDownstream.contract.methods.updateTwoArgs(12345, 23456).encodeABI();
+      orchestrator.addTransaction(mockDownstream.address, updateTwoArgsEncoded, { from: deployer });
+      await expectRevert.unspecified(orchestrator.rebase(new BN('653313740501264965'), new BN('653313740501264965')));
     });
 
     it('should have 3 transactions', async function () {
-      (await orchestrator.transactionsSize.call()).should.be.bignumber.eq(3);
+      (await orchestrator.transactionsLength.call()).should.be.bignumber.eq('3');
     });
   });
 
   describe('Access Control', function () {
     describe('addTransaction', async function () {
       it('should be callable by owner', async function () {
-        const updateNoArgEncoded = mockDownstream.contract.updateNoArg.getData();
+        const updateNoArgEncoded = mockDownstream.contract.methods.updateNoArg().encodeABI();
         expect(
           await chain.isEthException(
-            orchestrator.addTransaction(mockDownstream.address, updateNoArgEncoded, {from: deployer})
-          )
+            orchestrator.addTransaction(mockDownstream.address, updateNoArgEncoded, { from: deployer }),
+          ),
         ).to.be.false;
       });
 
       it('should be not be callable by others', async function () {
-        const updateNoArgEncoded = mockDownstream.contract.updateNoArg.getData();
+        const updateNoArgEncoded = mockDownstream.contract.methods.updateNoArg().encodeABI();
         expect(
           await chain.isEthException(
-            orchestrator.addTransaction(mockDownstream.address, updateNoArgEncoded, {from: user})
-          )
+            orchestrator.addTransaction(mockDownstream.address, updateNoArgEncoded, { from: user }),
+          ),
         ).to.be.true;
       });
     });
 
     describe('setTransactionEnabled', async function () {
       it('should be callable by owner', async function () {
-        (await orchestrator.transactionsSize.call()).should.be.bignumber.gt(0);
+        const updateNoArgEncoded = mockDownstream.contract.methods.updateNoArg().encodeABI();
         expect(
           await chain.isEthException(
-            orchestrator.setTransactionEnabled(0, true, {from: deployer})
-          )
+            orchestrator.addTransaction(mockDownstream.address, updateNoArgEncoded, { from: deployer }),
+          ),
+        ).to.be.false;
+        (await orchestrator.transactionsLength.call()).should.be.bignumber.gt('0');
+        expect(
+          await chain.isEthException(
+            orchestrator.setTransactionEnabled(0, true, { from: deployer }),
+          ),
         ).to.be.false;
       });
 
       it('should be not be callable by others', async function () {
-        (await orchestrator.transactionsSize.call()).should.be.bignumber.gt(0);
+        const updateNoArgEncoded = mockDownstream.contract.methods.updateNoArg().encodeABI();
         expect(
           await chain.isEthException(
-            orchestrator.setTransactionEnabled(0, true, {from: user})
-          )
+            orchestrator.addTransaction(mockDownstream.address, updateNoArgEncoded, { from: deployer }),
+          ),
+        ).to.be.false;
+        (await orchestrator.transactionsLength.call()).should.be.bignumber.gt('0');
+        expect(
+          await chain.isEthException(
+            orchestrator.setTransactionEnabled(0, true, { from: user }),
+          ),
         ).to.be.true;
       });
     });
 
     describe('removeTransaction', async function () {
       it('should be not be callable by others', async function () {
-        (await orchestrator.transactionsSize.call()).should.be.bignumber.gt(0);
+        const updateNoArgEncoded = mockDownstream.contract.methods.updateNoArg().encodeABI();
         expect(
           await chain.isEthException(
-            orchestrator.removeTransaction(0, {from: user})
-          )
+            orchestrator.addTransaction(mockDownstream.address, updateNoArgEncoded, { from: deployer }),
+          ),
+        ).to.be.false;
+        (await orchestrator.transactionsLength.call()).should.be.bignumber.gt('0');
+        expect(
+          await chain.isEthException(
+            orchestrator.removeTransaction(0, { from: user }),
+          ),
         ).to.be.true;
       });
 
       it('should be callable by owner', async function () {
-        (await orchestrator.transactionsSize.call()).should.be.bignumber.gt(0);
+        const updateNoArgEncoded = mockDownstream.contract.methods.updateNoArg().encodeABI();
         expect(
           await chain.isEthException(
-            orchestrator.removeTransaction(0, {from: deployer})
-          )
+            orchestrator.addTransaction(mockDownstream.address, updateNoArgEncoded, { from: deployer }),
+          ),
+        ).to.be.false;
+        (await orchestrator.transactionsLength.call()).should.be.bignumber.gt('0');
+        expect(
+          await chain.isEthException(
+            orchestrator.removeTransaction(0, { from: deployer }),
+          ),
         ).to.be.false;
       });
     });
 
     describe('transferOwnership', async function () {
       it('should transfer ownership', async function () {
-        (await orchestrator.owner.call()).should.eq(deployer);
+        (await orchestrator.owner.call()).should.equal(deployer);
         await orchestrator.transferOwnership(user);
-        (await orchestrator.owner.call()).should.eq(user);
+        (await orchestrator.owner.call()).should.equal(user);
       });
     });
   });

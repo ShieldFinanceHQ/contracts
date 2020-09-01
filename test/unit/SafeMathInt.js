@@ -1,6 +1,6 @@
 const SafeMathIntMock = artifacts.require('SafeMathIntMock');
 
-const BigNumber = web3.BigNumber;
+const BigNumber = web3.utils.BN;
 const _require = require('app-root-path').require;
 const BlockchainCaller = _require('/util/blockchain_caller');
 const chain = new BlockchainCaller(web3);
@@ -176,15 +176,15 @@ contract('SafeMathInt', () => {
 
   describe('abs', function () {
     it('works for 0', async function () {
-      (await returnVal(safeMathInt.abs(0))).should.be.bignumber.eq(0);
+      (await returnVal(safeMathInt.abs(0))).should.be.bignumber.eq('0');
     });
 
     it('works on positive numbers', async function () {
-      (await returnVal(safeMathInt.abs(100))).should.be.bignumber.eq(100);
+      (await returnVal(safeMathInt.abs(100))).should.be.bignumber.eq('100');
     });
 
     it('works on negative numbers', async function () {
-      (await returnVal(safeMathInt.abs(-100))).should.be.bignumber.eq(100);
+      (await returnVal(safeMathInt.abs(-100))).should.be.bignumber.eq('100');
     });
 
     it('fails on overflow condition', async function () {

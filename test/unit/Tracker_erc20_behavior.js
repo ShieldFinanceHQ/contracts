@@ -30,7 +30,7 @@ const Tracker = artifacts.require('Tracker.sol');
 const _require = require('app-root-path').require;
 const BlockchainCaller = _require('/util/blockchain_caller');
 const chain = new BlockchainCaller(web3);
-const BigNumber = web3.BigNumber;
+const BigNumber = web3.utils.BN;
 const encodeCall = require('zos-lib/lib/helpers/encodeCall').default;
 
 require('chai')
@@ -77,7 +77,7 @@ contract('Tracker:ERC20', function (accounts) {
   describe('balanceOf', function () {
     describe('when the requested account has no tokens', function () {
       it('returns zero', async function () {
-        (await token.balanceOf.call(anotherAccount)).should.be.bignumber.eq(0);
+        (await token.balanceOf.call(anotherAccount)).should.be.bignumber.eq('0');
       });
     });
 
@@ -383,7 +383,7 @@ contract('Tracker:ERC20:decreaseAllowance', function (accounts) {
         });
 
         it('keeps the allowance to zero', async function () {
-          (await token.allowance(owner, anotherAccount)).should.be.bignumber.eq(0);
+          (await token.allowance(owner, anotherAccount)).should.be.bignumber.eq('0');
         });
 
         it('emits an approval event', async function () {
@@ -391,7 +391,7 @@ contract('Tracker:ERC20:decreaseAllowance', function (accounts) {
           expect(r.logs[0].event).to.eq('Approval');
           expect(r.logs[0].args.owner).to.eq(owner);
           expect(r.logs[0].args.spender).to.eq(anotherAccount);
-          r.logs[0].args.value.should.be.bignumber.eq(0);
+          r.logs[0].args.value.should.be.bignumber.eq('0');
         });
       });
 
@@ -423,7 +423,7 @@ contract('Tracker:ERC20:decreaseAllowance', function (accounts) {
         });
 
         it('keeps the allowance to zero', async function () {
-          (await token.allowance(owner, anotherAccount)).should.be.bignumber.eq(0);
+          (await token.allowance(owner, anotherAccount)).should.be.bignumber.eq('0');
         });
 
         it('emits an approval event', async function () {
@@ -431,7 +431,7 @@ contract('Tracker:ERC20:decreaseAllowance', function (accounts) {
           expect(r.logs[0].event).to.eq('Approval');
           expect(r.logs[0].args.owner).to.eq(owner);
           expect(r.logs[0].args.spender).to.eq(anotherAccount);
-          r.logs[0].args.value.should.be.bignumber.eq(0);
+          r.logs[0].args.value.should.be.bignumber.eq('0');
         });
       });
 

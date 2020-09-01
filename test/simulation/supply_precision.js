@@ -15,9 +15,11 @@ const _require = require('app-root-path').require;
 const BlockchainCaller = _require('/util/blockchain_caller');
 const chain = new BlockchainCaller(web3);
 const encodeCall = require('zos-lib/lib/helpers/encodeCall').default;
-const BigNumber = web3.BigNumber;
+const BigNumber = web3.utils.BN;
 
-const endSupply = new BigNumber(2).pow(128).minus(1);
+console.log('web3.utils.BN', web3.utils.BN);
+
+const endSupply = new BigNumber("2").pow(new BigNumber(128)).minus(new BigNumber(1));
 
 let tracker, preRebaseSupply, postRebaseSupply;
 preRebaseSupply = new BigNumber(0);

@@ -3,7 +3,7 @@ const MockTracker = artifacts.require('MockTracker.sol');
 const MockOracle = artifacts.require('MockOracle.sol');
 
 const encodeCall = require('zos-lib/lib/helpers/encodeCall').default;
-const BigNumber = web3.BigNumber;
+const BigNumber = web3.utils.BN;
 const _require = require('app-root-path').require;
 const BlockchainCaller = _require('/util/blockchain_caller');
 const chain = new BlockchainCaller(web3);
@@ -80,19 +80,19 @@ contract('Policy:initialize', async function (accounts) {
       (await policy.deviationThreshold.call()).should.be.bignumber.eq(0.05e18);
     });
     it('rebaseLag', async function () {
-      (await policy.rebaseLag.call()).should.be.bignumber.eq(30);
+      (await policy.rebaseLag.call()).should.be.bignumber.eq('30');
     });
     it('minRebaseTimeIntervalSec', async function () {
       (await policy.minRebaseTimeIntervalSec.call()).should.be.bignumber.eq(24 * 60 * 60);
     });
     it('epoch', async function () {
-      (await policy.epoch.call()).should.be.bignumber.eq(0);
+      (await policy.epoch.call()).should.be.bignumber.eq('0');
     });
     it('rebaseWindowOffsetSec', async function () {
-      (await policy.rebaseWindowOffsetSec.call()).should.be.bignumber.eq(72000);
+      (await policy.rebaseWindowOffsetSec.call()).should.be.bignumber.eq('72000');
     });
     it('rebaseWindowLengthSec', async function () {
-      (await policy.rebaseWindowLengthSec.call()).should.be.bignumber.eq(900);
+      (await policy.rebaseWindowLengthSec.call()).should.be.bignumber.eq('900');
     });
     it('should set owner', async function () {
       expect(await policy.owner.call()).to.eq(deployer);
@@ -272,9 +272,9 @@ contract('Policy:setRebaseTimingParameters', async function (accounts) {
   describe('when params are valid', function () {
     it('should setRebaseTimingParameters', async function () {
       await policy.setRebaseTimingParameters(600, 60, 300);
-      (await policy.minRebaseTimeIntervalSec.call()).should.be.bignumber.eq(600);
-      (await policy.rebaseWindowOffsetSec.call()).should.be.bignumber.eq(60);
-      (await policy.rebaseWindowLengthSec.call()).should.be.bignumber.eq(300);
+      (await policy.minRebaseTimeIntervalSec.call()).should.be.bignumber.eq('600');
+      (await policy.rebaseWindowOffsetSec.call()).should.be.bignumber.eq('60');
+      (await policy.rebaseWindowLengthSec.call()).should.be.bignumber.eq('300');
     });
   });
 });
@@ -349,22 +349,22 @@ contract('Policy:Rebase', async function (accounts) {
       await mockExternalData(INITIAL_RATE.minus(1), INITIAL_CPI, 1000);
       await chain.waitForSomeTime(60);
       r = await policy.rebase({from: orchestrator});
-      r.logs[0].args.requestedSupplyAdjustment.should.be.bignumber.eq(0);
+      r.logs[0].args.requestedSupplyAdjustment.should.be.bignumber.eq('0');
       await chain.waitForSomeTime(60);
 
       await mockExternalData(INITIAL_RATE.plus(1), INITIAL_CPI, 1000);
       r = await policy.rebase({from: orchestrator});
-      r.logs[0].args.requestedSupplyAdjustment.should.be.bignumber.eq(0);
+      r.logs[0].args.requestedSupplyAdjustment.should.be.bignumber.eq('0');
       await chain.waitForSomeTime(60);
 
       await mockExternalData(INITIAL_RATE_5P_MORE.minus(2), INITIAL_CPI, 1000);
       r = await policy.rebase({from: orchestrator});
-      r.logs[0].args.requestedSupplyAdjustment.should.be.bignumber.eq(0);
+      r.logs[0].args.requestedSupplyAdjustment.should.be.bignumber.eq('0');
       await chain.waitForSomeTime(60);
 
       await mockExternalData(INITIAL_RATE_5P_LESS.plus(2), INITIAL_CPI, 1000);
       r = await policy.rebase({from: orchestrator});
-      r.logs[0].args.requestedSupplyAdjustment.should.be.bignumber.eq(0);
+      r.logs[0].args.requestedSupplyAdjustment.should.be.bignumber.eq('0');
       await chain.waitForSomeTime(60);
     });
   });
@@ -409,7 +409,7 @@ contract('Policy:Rebase', async function (accounts) {
       // Supply is MAX_SUPPLY-1, exchangeRate is 2x; resulting in a new supply more than MAX_SUPPLY
       // However, supply is ONLY increased by 1 to MAX_SUPPLY
       r = await policy.rebase({from: orchestrator});
-      r.logs[0].args.requestedSupplyAdjustment.should.be.bignumber.eq(1);
+      r.logs[0].args.requestedSupplyAdjustment.should.be.bignumber.eq('1');
     });
   });
 });
@@ -425,7 +425,7 @@ contract('Policy:Rebase', async function (accounts) {
 
     it('should not grow', async function () {
       r = await policy.rebase({from: orchestrator});
-      r.logs[0].args.requestedSupplyAdjustment.should.be.bignumber.eq(0);
+      r.logs[0].args.requestedSupplyAdjustment.should.be.bignumber.eq('0');
     });
   });
 });
@@ -510,7 +510,7 @@ contract('Policy:Rebase', async function (accounts) {
       expect(log.args.epoch.eq(prevEpoch.plus(1))).to.be.true;
       log.args.exchangeRate.should.be.bignumber.eq(INITIAL_RATE_60P_MORE);
       log.args.cpi.should.be.bignumber.eq(INITIAL_CPI);
-      log.args.requestedSupplyAdjustment.should.be.bignumber.eq(20);
+      log.args.requestedSupplyAdjustment.should.be.bignumber.eq('20');
     });
 
     it('should call getData from the market oracle', async function () {
@@ -593,7 +593,7 @@ contract('Policy:Rebase', async function (accounts) {
     it('should emit Rebase with positive requestedSupplyAdjustment', async function () {
       const log = r.logs[0];
       expect(log.event).to.eq('LogRebase');
-      log.args.requestedSupplyAdjustment.should.be.bignumber.eq(9);
+      log.args.requestedSupplyAdjustment.should.be.bignumber.eq('9');
     });
   });
 });
@@ -612,7 +612,7 @@ contract('Policy:Rebase', async function (accounts) {
     it('should emit Rebase with 0 requestedSupplyAdjustment', async function () {
       const log = r.logs[0];
       expect(log.event).to.eq('LogRebase');
-      log.args.requestedSupplyAdjustment.should.be.bignumber.eq(0);
+      log.args.requestedSupplyAdjustment.should.be.bignumber.eq('0');
     });
   });
 });

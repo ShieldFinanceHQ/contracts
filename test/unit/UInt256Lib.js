@@ -1,6 +1,6 @@
 const UInt256LibMock = artifacts.require('UInt256LibMock');
 
-const BigNumber = web3.BigNumber;
+const BigNumber = web3.utils.BN;
 const _require = require('app-root-path').require;
 const BlockchainCaller = _require('/util/blockchain_caller');
 const chain = new BlockchainCaller(web3);
@@ -33,7 +33,7 @@ contract('UInt256Lib', () => {
 
     describe('when then number is MAX_INT256', () => {
       it('converts int to uint256 safely', async function () {
-        (await returnVal(UInt256Lib.toInt256Safe(MAX_INT256))).should.be.bignumber.eq(MAX_INT256);
+        (await returnVal(UInt256Lib.toInt256Safe(MAX_INT256))).should.be.bignumber.eq(MAX_INT256;
       });
     });
 
@@ -45,7 +45,7 @@ contract('UInt256Lib', () => {
 
     describe('when then number is 0', () => {
       it('converts int to uint256 safely', async function () {
-        (await returnVal(UInt256Lib.toInt256Safe(0))).should.be.bignumber.eq(0);
+        (await returnVal(UInt256Lib.toInt256Safe(0))).should.be.bignumber.eq('0');
       });
     });
   });
