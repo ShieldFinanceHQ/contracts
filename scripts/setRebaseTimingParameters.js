@@ -1,11 +1,15 @@
 #!/usr/bin/env node
 
 const argv = require('yargs') // eslint-disable-line
-  .option('storedCurrentRate', {
+  .option('minRebaseTimeIntervalSec', {
     type: 'string',
     demandOption: true,
   })
-  .option('storedTargetRate', {
+  .option('rebaseWindowOffsetSec', {
+    type: 'string',
+    demandOption: true,
+  })
+  .option('rebaseWindowLengthSec', {
     type: 'string',
     demandOption: true,
   })
@@ -39,11 +43,8 @@ async function main() {
   const { read, execute } = deployments;
   const { deployer, user } = await getNamedAccounts();
 
-  const receipt = await execute('Orchestrator', { from: deployer }, 'rebase', argv['storedCurrentRate'], argv['storedTargetRate']);
-  console.info('Rebase TX: ', `https://etherscan.io/tx/${receipt.transactionHash}`);
-
-  const totalSupply = await read('Tracker', { from: user }, 'totalSupply');
-  console.info('Total supply: ', totalSupply.toString());
+  const receipt = await execute('Policy', { from: deployer }, 'setRebaseTimingParameters', argv['minRebaseTimeIntervalSec'], argv['rebaseWindowOffsetSec'], argv['rebaseWindowLengthSec']);
+  console.info('TX: ', `https://etherscan.io/tx/${receipt.transactionHash}`);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

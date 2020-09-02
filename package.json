@@ -45,7 +45,8 @@
     "dotenv": "^8.2.0",
     "frg-ethereum-runners": "https://github.com/ampleforth/frg-ethereum-runners.git#v1.0.0-alpha",
     "js-yaml": "^3.13.1",
-    "truffle": "^5.1.42"
+    "truffle": "^5.1.42",
+    "yargs": "^15.4.1"
   },
   "devDependencies": {
     "@nomiclabs/buidler": "^1.4.4",
