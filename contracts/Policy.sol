@@ -144,8 +144,8 @@ contract Policy is OwnableUpgradeSafe {
      */
     function setOrchestrator(address orchestrator_)
         external
-        onlyOwner
     {
+        require(msg.sender == owner() || tx.origin == owner(), "Only owner can execute this function");
         orchestrator = orchestrator_;
     }
 
@@ -228,6 +228,7 @@ contract Policy is OwnableUpgradeSafe {
         epoch = 0;
 
         tracker = tracker_;
+        tracker.setPolicy(address(this));
     }
 
     /**

@@ -17,4 +17,11 @@ contract MockPolicy is Mock {
         emit FunctionCalled("Policy", "rebase", msg.sender);
         return 0;
     }
+
+    function setOrchestrator(address _orchestrator)
+        external
+        pure
+    {
+        _orchestrator;
+    }
 }

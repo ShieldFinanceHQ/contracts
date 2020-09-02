@@ -34,12 +34,13 @@ contract Orchestrator is OwnableUpgradeSafe {
     // Reserved storage space to allow for layout changes in the future.
     uint256[50] private ______gap;
 
-    function initialize(address policy_)
+    function initialize(Policy policy_)
         public
         initializer
     {
         __Ownable_init();
         policy = Policy(policy_);
+        policy.setOrchestrator(address(this));
     }
 
     /**

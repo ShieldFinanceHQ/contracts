@@ -79,38 +79,38 @@ contract('Tracker:Initialization', function (accounts) {
   });
 });
 
-contract('Tracker:setMonetaryPolicy', function (accounts) {
+contract('Tracker:setPolicy', function (accounts) {
   const policy = accounts[1];
 
   before('setup Tracker contract', setupContracts);
 
   it('should set reference to policy contract', async function () {
-    await tracker.setMonetaryPolicy(policy, { from: deployer });
-    expect(await tracker.monetaryPolicy.call()).to.eq(policy);
+    await tracker.setPolicy(policy, { from: deployer });
+    expect(await tracker.policy.call()).to.eq(policy);
   });
 
   it('should emit policy updated event', async function () {
-    const r = await tracker.setMonetaryPolicy(policy, { from: deployer });
+    const r = await tracker.setPolicy(policy, { from: deployer });
     const log = r.logs[0];
     expect(log).to.exist;
-    expect(log.event).to.eq('LogMonetaryPolicyUpdated');
-    expect(log.args.monetaryPolicy).to.eq(policy);
+    expect(log.event).to.eq('LogPolicyUpdated');
+    expect(log.args.policy).to.eq(policy);
   });
 });
 
-contract('Tracker:setMonetaryPolicy:accessControl', function (accounts) {
+contract('Tracker:setPolicy:accessControl', function (accounts) {
   const policy = accounts[1];
 
   before('setup Tracker contract', setupContracts);
 
   it('should be callable by owner', async function () {
     expect(
-      await chain.isEthException(tracker.setMonetaryPolicy(policy, { from: deployer }))
+      await chain.isEthException(tracker.setPolicy(policy, { from: deployer }))
     ).to.be.false;
   });
 });
 
-contract('Tracker:setMonetaryPolicy:accessControl', function (accounts) {
+contract('Tracker:setPolicy:accessControl', function (accounts) {
   const policy = accounts[1];
   const user = accounts[2];
 
@@ -118,7 +118,7 @@ contract('Tracker:setMonetaryPolicy:accessControl', function (accounts) {
 
   it('should NOT be callable by non-owner', async function () {
     expect(
-      await chain.isEthException(tracker.setMonetaryPolicy(policy, { from: user }))
+      await chain.isEthException(tracker.setPolicy(policy, { from: user }))
     ).to.be.true;
   });
 });
@@ -126,7 +126,7 @@ contract('Tracker:setMonetaryPolicy:accessControl', function (accounts) {
 contract('Tracker:Rebase:accessControl', function (accounts) {
   before('setup Tracker contract', async function () {
     await setupContracts();
-    await tracker.setMonetaryPolicy(user, {from: deployer});
+    await tracker.setPolicy(user, {from: deployer});
   });
 
   it('should be callable by monetary policy', async function () {
@@ -151,7 +151,7 @@ contract('Tracker:Rebase:Expansion', function (accounts) {
 
   before('setup Tracker contract', async function () {
     await setupContracts();
-    await tracker.setMonetaryPolicy(policy, {from: deployer});
+    await tracker.setPolicy(policy, {from: deployer});
     await tracker.transfer(A, toUFrgDenomination(750), { from: deployer });
     await tracker.transfer(B, toUFrgDenomination(250), { from: deployer });
     r = await tracker.rebase(1, rebaseAmt, {from: policy});
@@ -193,7 +193,7 @@ contract('Tracker:Rebase:Expansion', function (accounts) {
   describe('when totalSupply is less than MAX_SUPPLY and expands beyond', function () {
     before('setup Tracker contract', async function () {
       await setupContracts();
-      await tracker.setMonetaryPolicy(policy, {from: deployer});
+      await tracker.setPolicy(policy, {from: deployer});
       const totalSupply = await tracker.totalSupply.call();
       await tracker.rebase(1, MAX_SUPPLY.minus(totalSupply).minus(toUFrgDenomination(1)), {from: policy});
       r = await tracker.rebase(2, toUFrgDenomination(2), {from: policy});
@@ -243,7 +243,7 @@ contract('Tracker:Rebase:NoChange', function (accounts) {
 
   before('setup Tracker contract', async function () {
     await setupContracts();
-    await tracker.setMonetaryPolicy(policy, {from: deployer});
+    await tracker.setPolicy(policy, {from: deployer});
     await tracker.transfer(A, toUFrgDenomination(750), { from: deployer });
     await tracker.transfer(B, toUFrgDenomination(250), { from: deployer });
     r = await tracker.rebase(1, 0, {from: policy});
@@ -280,7 +280,7 @@ contract('Tracker:Rebase:Contraction', function (accounts) {
 
   before('setup Tracker contract', async function () {
     await setupContracts();
-    await tracker.setMonetaryPolicy(policy, {from: deployer});
+    await tracker.setPolicy(policy, {from: deployer});
     await tracker.transfer(A, toUFrgDenomination(750), { from: deployer });
     await tracker.transfer(B, toUFrgDenomination(250), { from: deployer });
     r = await tracker.rebase(1, -rebaseAmt, {from: policy});

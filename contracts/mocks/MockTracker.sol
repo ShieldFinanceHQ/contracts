@@ -36,4 +36,12 @@ contract MockTracker is Mock {
     {
         return _supply;
     }
+
+    function setPolicy(address _policy)
+        external
+        pure
+    {
+        _policy;
+    }
+
 }

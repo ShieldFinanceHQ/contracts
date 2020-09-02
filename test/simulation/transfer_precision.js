@@ -70,7 +70,7 @@ async function exec () {
     data: encodeCall('initialize', ['address'], [deployer]),
     from: deployer
   });
-  await tracker.setMonetaryPolicy(deployer, {from: deployer});
+  await tracker.setPolicy(deployer, {from: deployer});
 
   let i = 0;
   do {

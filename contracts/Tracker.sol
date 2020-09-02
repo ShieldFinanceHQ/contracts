@@ -39,13 +39,13 @@ contract Tracker is ERC20UpgradeSafe, OwnableUpgradeSafe {
     using SafeMathInt for int256;
 
     event LogRebase(uint256 indexed epoch, uint256 totalSupply);
-    event LogMonetaryPolicyUpdated(address monetaryPolicy);
+    event LogPolicyUpdated(address policy);
 
     // Used for authentication
-    address public monetaryPolicy;
+    address public policy;
 
-    modifier onlyMonetaryPolicy() {
-        require(msg.sender == monetaryPolicy);
+    modifier onlyPolicy() {
+        require(msg.sender == policy);
         _;
     }
 
@@ -78,14 +78,13 @@ contract Tracker is ERC20UpgradeSafe, OwnableUpgradeSafe {
     uint256[50] private ______gap;
 
     /**
-     * @param monetaryPolicy_ The address of the monetary policy contract to use for authentication.
+     * @param policy_ The address of the monetary policy contract to use for authentication.
      */
-    function setMonetaryPolicy(address monetaryPolicy_)
+    function setPolicy(address policy_)
         external
-        onlyOwner
     {
-        monetaryPolicy = monetaryPolicy_;
-        emit LogMonetaryPolicyUpdated(monetaryPolicy_);
+        require(msg.sender == owner() || tx.origin == owner(), "Only owner can execute this function");
+        emit LogPolicyUpdated(policy_);
     }
 
     /**
@@ -95,7 +94,7 @@ contract Tracker is ERC20UpgradeSafe, OwnableUpgradeSafe {
      */
     function rebase(uint256 epoch, int256 supplyDelta)
         external
-        onlyMonetaryPolicy
+        onlyPolicy
         returns (uint256)
     {
         if (supplyDelta == 0) {
