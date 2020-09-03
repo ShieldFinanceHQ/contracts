@@ -28,6 +28,11 @@ module.exports = {
       url: process.env.ROPSTEN_URL,
       from: process.env.ROPSTEN_FROM,
       accounts: process.env.ROPSTEN_PRIVATE_KEYS.split(',')
+    },
+    mainnet: {
+      url: process.env.MAINNET_URL,
+      from: process.env.MAINNET_FROM,
+      accounts: process.env.MAINNET_PRIVATE_KEYS.split(',')
     }
   },
   solc: {
