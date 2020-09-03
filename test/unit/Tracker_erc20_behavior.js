@@ -64,7 +64,7 @@ async function setupContractAndAccounts (accounts) {
 }
 
 contract('Tracker:ERC20', function (accounts) {
-  before('setup Tracker contract', async function () {
+  beforeEach('setup Tracker contract', async function () {
     await setupContractAndAccounts(accounts);
   });
 
@@ -90,7 +90,7 @@ contract('Tracker:ERC20', function (accounts) {
 });
 
 contract('Tracker:ERC20:transfer', function (accounts) {
-  before('setup Tracker contract', async function () {
+  beforeEach('setup Tracker contract', async function () {
     await setupContractAndAccounts(accounts);
   });
 
@@ -103,7 +103,7 @@ contract('Tracker:ERC20:transfer', function (accounts) {
   });
 
   describe('when the sender has enough balance', function () {
-    before(async function () {
+    beforeEach(async function () {
       r = await token.transfer(recipient, transferAmount, { from: owner });
     });
 
@@ -133,7 +133,7 @@ contract('Tracker:ERC20:transfer', function (accounts) {
 });
 
 contract('Tracker:ERC20:transferFrom', function (accounts) {
-  before('setup Tracker contract', async function () {
+  beforeEach('setup Tracker contract', async function () {
     await setupContractAndAccounts(accounts);
   });
 
@@ -169,7 +169,7 @@ contract('Tracker:ERC20:transferFrom', function (accounts) {
 
     describe('when the owner has enough balance', function () {
       let prevSenderBalance, r;
-      before(async function () {
+      beforeEach(async function () {
         prevSenderBalance = await token.balanceOf.call(owner);
         await token.approve(anotherAccount, transferAmount, { from: owner });
         r = await token.transferFrom(owner, recipient, transferAmount, { from: anotherAccount });
@@ -196,14 +196,14 @@ contract('Tracker:ERC20:transferFrom', function (accounts) {
 });
 
 contract('Tracker:ERC20:approve', function (accounts) {
-  before('setup Tracker contract', async function () {
+  beforeEach('setup Tracker contract', async function () {
     await setupContractAndAccounts(accounts);
   });
 
   describe('when the spender is NOT the zero address', function () {
     describe('when the sender has enough balance', function () {
       describe('when there was no approved amount before', function () {
-        before(async function () {
+        beforeEach(async function () {
           await token.approve(anotherAccount, 0, { from: owner });
           r = await token.approve(anotherAccount, transferAmount, { from: owner });
         });
@@ -222,7 +222,7 @@ contract('Tracker:ERC20:approve', function (accounts) {
       });
 
       describe('when the spender had an approved amount', function () {
-        before(async function () {
+        beforeEach(async function () {
           await token.approve(anotherAccount, toTokenDenomination(1), { from: owner });
           r = await token.approve(anotherAccount, transferAmount, { from: owner });
         });
@@ -243,7 +243,7 @@ contract('Tracker:ERC20:approve', function (accounts) {
 
     describe('when the sender does not have enough balance', function () {
       describe('when there was no approved amount before', function () {
-        before(async function () {
+        beforeEach(async function () {
           await token.approve(anotherAccount, 0, { from: owner });
           r = await token.approve(anotherAccount, overdraftAmount, { from: owner });
         });
@@ -262,7 +262,7 @@ contract('Tracker:ERC20:approve', function (accounts) {
       });
 
       describe('when the spender had an approved amount', function () {
-        before(async function () {
+        beforeEach(async function () {
           await token.approve(anotherAccount, toTokenDenomination(1), { from: owner });
           r = await token.approve(anotherAccount, overdraftAmount, { from: owner });
         });
@@ -284,14 +284,14 @@ contract('Tracker:ERC20:approve', function (accounts) {
 });
 
 contract('Tracker:ERC20:increaseAllowance', function (accounts) {
-  before('setup Tracker contract', async function () {
+  beforeEach('setup Tracker contract', async function () {
     await setupContractAndAccounts(accounts);
   });
 
   describe('when the spender is NOT the zero address', function () {
     describe('when the sender has enough balance', function () {
       describe('when there was no approved amount before', function () {
-        before(async function () {
+        beforeEach(async function () {
           await token.approve(anotherAccount, 0, { from: owner });
           r = await token.increaseAllowance(anotherAccount, transferAmount, { from: owner });
         });
@@ -330,7 +330,7 @@ contract('Tracker:ERC20:increaseAllowance', function (accounts) {
 
     describe('when the sender does not have enough balance', function () {
       describe('when there was no approved amount before', function () {
-        before(async function () {
+        beforeEach(async function () {
           await token.approve(anotherAccount, 0, { from: owner });
           r = await token.increaseAllowance(anotherAccount, overdraftAmount, { from: owner });
         });
@@ -371,14 +371,14 @@ contract('Tracker:ERC20:increaseAllowance', function (accounts) {
 });
 
 contract('Tracker:ERC20:decreaseAllowance', function (accounts) {
-  before('setup Tracker contract', async function () {
+  beforeEach('setup Tracker contract', async function () {
     await setupContractAndAccounts(accounts);
   });
 
   describe('when the spender is NOT the zero address', function () {
     describe('when the sender does NOT have enough balance', function () {
       describe('when there was no approved amount before', function () {
-        before(async function () {
+        beforeEach(async function () {
           r = await token.decreaseAllowance(anotherAccount, overdraftAmount, { from: owner });
         });
 
@@ -396,7 +396,7 @@ contract('Tracker:ERC20:decreaseAllowance', function (accounts) {
       });
 
       describe('when the spender had an approved amount', function () {
-        before(async function () {
+        beforeEach(async function () {
           await token.approve(anotherAccount, overdraftAmountPlusOne, { from: owner });
           r = await token.decreaseAllowance(anotherAccount, overdraftAmount, { from: owner });
         });
@@ -417,7 +417,7 @@ contract('Tracker:ERC20:decreaseAllowance', function (accounts) {
 
     describe('when the sender has enough balance', function () {
       describe('when there was no approved amount before', function () {
-        before(async function () {
+        beforeEach(async function () {
           await token.approve(anotherAccount, 0, { from: owner });
           r = await token.decreaseAllowance(anotherAccount, transferAmount, { from: owner });
         });
@@ -436,7 +436,7 @@ contract('Tracker:ERC20:decreaseAllowance', function (accounts) {
       });
 
       describe('when the spender had an approved amount', function () {
-        before(async function () {
+        beforeEach(async function () {
           await token.approve(anotherAccount, transferAmountPlusOne, { from: owner });
           r = await token.decreaseAllowance(anotherAccount, transferAmount, { from: owner });
         });

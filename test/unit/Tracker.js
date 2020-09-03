@@ -32,7 +32,7 @@ async function setupContracts () {
 }
 
 contract('Tracker', function (accounts) {
-  before('setup Tracker contract', setupContracts);
+  beforeEach('setup Tracker contract', setupContracts);
 
   it('should reject any ether sent to it', async function () {
     expect(
@@ -42,7 +42,7 @@ contract('Tracker', function (accounts) {
 });
 
 contract('Tracker:Initialization', function (accounts) {
-  before('setup Tracker contract', setupContracts);
+  beforeEach('setup Tracker contract', setupContracts);
 
   it('should transfer 50M tracker to the deployer', async function () {
     (await tracker.balanceOf.call(deployer)).should.be.bignumber.eq(INTIAL_SUPPLY);
@@ -82,7 +82,7 @@ contract('Tracker:Initialization', function (accounts) {
 contract('Tracker:setPolicy', function (accounts) {
   const policy = accounts[1];
 
-  before('setup Tracker contract', setupContracts);
+  beforeEach('setup Tracker contract', setupContracts);
 
   it('should set reference to policy contract', async function () {
     await tracker.setPolicy(policy, { from: deployer });
@@ -101,7 +101,7 @@ contract('Tracker:setPolicy', function (accounts) {
 contract('Tracker:setPolicy:accessControl', function (accounts) {
   const policy = accounts[1];
 
-  before('setup Tracker contract', setupContracts);
+  beforeEach('setup Tracker contract', setupContracts);
 
   it('should be callable by owner', async function () {
     expect(
@@ -114,7 +114,7 @@ contract('Tracker:setPolicy:accessControl', function (accounts) {
   const policy = accounts[1];
   const user = accounts[2];
 
-  before('setup Tracker contract', setupContracts);
+  beforeEach('setup Tracker contract', setupContracts);
 
   it('should NOT be callable by non-owner', async function () {
     expect(
@@ -124,7 +124,7 @@ contract('Tracker:setPolicy:accessControl', function (accounts) {
 });
 
 contract('Tracker:Rebase:accessControl', function (accounts) {
-  before('setup Tracker contract', async function () {
+  beforeEach('setup Tracker contract', async function () {
     await setupContracts();
     await tracker.setPolicy(user, {from: deployer});
   });
@@ -149,7 +149,7 @@ contract('Tracker:Rebase:Expansion', function (accounts) {
   const policy = accounts[1];
   const rebaseAmt = INTIAL_SUPPLY / 10;
 
-  before('setup Tracker contract', async function () {
+  beforeEach('setup Tracker contract', async function () {
     await setupContracts();
     await tracker.setPolicy(policy, {from: deployer});
     await tracker.transfer(A, toUFrgDenomination(750), { from: deployer });
@@ -191,7 +191,7 @@ contract('Tracker:Rebase:Expansion', function (accounts) {
   const MAX_SUPPLY = new BN(2).pow(128).minus(1);
 
   describe('when totalSupply is less than MAX_SUPPLY and expands beyond', function () {
-    before('setup Tracker contract', async function () {
+    beforeEach('setup Tracker contract', async function () {
       await setupContracts();
       await tracker.setPolicy(policy, {from: deployer});
       const totalSupply = await tracker.totalSupply.call();
@@ -214,7 +214,7 @@ contract('Tracker:Rebase:Expansion', function (accounts) {
   });
 
   describe('when totalSupply is MAX_SUPPLY and expands', function () {
-    before(async function () {
+    beforeEach(async function () {
       b = await tracker.totalSupply.call();
       b.should.be.bignumber.eq(MAX_SUPPLY);
       r = await tracker.rebase(3, toUFrgDenomination(2), {from: policy});
@@ -241,7 +241,7 @@ contract('Tracker:Rebase:NoChange', function (accounts) {
   const B = accounts[3];
   const policy = accounts[1];
 
-  before('setup Tracker contract', async function () {
+  beforeEach('setup Tracker contract', async function () {
     await setupContracts();
     await tracker.setPolicy(policy, {from: deployer});
     await tracker.transfer(A, toUFrgDenomination(750), { from: deployer });
@@ -278,7 +278,7 @@ contract('Tracker:Rebase:Contraction', function (accounts) {
   const policy = accounts[1];
   const rebaseAmt = INTIAL_SUPPLY / 10;
 
-  before('setup Tracker contract', async function () {
+  beforeEach('setup Tracker contract', async function () {
     await setupContracts();
     await tracker.setPolicy(policy, {from: deployer});
     await tracker.transfer(A, toUFrgDenomination(750), { from: deployer });
@@ -313,7 +313,7 @@ contract('Tracker:Transfer', function (accounts) {
   const B = accounts[3];
   const C = accounts[4];
 
-  before('setup Tracker contract', setupContracts);
+  beforeEach('setup Tracker contract', setupContracts);
 
   describe('deployer transfers 12 to A', function () {
     it('should have correct balances', async function () {
@@ -367,7 +367,7 @@ contract('Tracker:Transfer', function (accounts) {
   describe('when the recipient is the zero address', function () {
     const owner = A;
 
-    before(async function () {
+    beforeEach(async function () {
       r = await tracker.approve(ZERO_ADDRESS, transferAmount, { from: owner });
     });
     it('emits an approval event', async function () {

@@ -16,10 +16,12 @@ let policy, mockTracker, mockMarketOracle, mockCpiOracle;
 let r, prevEpoch, prevTime;
 let deployer, user, orchestrator;
 
-const MAX_RATE = (new BN(1)).mul(new BN(10).pow(new BN(6)).mul(new BN(10).pow(new BN(18))));
+const DECIMALS = new BN(18);
+const SCALE = new BN(10).pow(DECIMALS);
+const MAX_RATE = (new BN(1)).mul(new BN(10).pow(new BN(6)).mul(SCALE));
 const MAX_SUPPLY = (new BN(2).pow(new BN(255)).sub(new BN(1))).div(MAX_RATE);
-const BASE_CPI = new BN(100).pow(new BN(18));
-const INITIAL_CPI = new BN('251.712').pow(new BN(18));
+const BASE_CPI = new BN(100).mul(SCALE);
+const INITIAL_CPI = new BN('251.712').mul(SCALE);
 const INITIAL_CPI_25P_MORE = INITIAL_CPI.mul(new BN(1.25)).divRound(new BN(1));
 const INITIAL_CPI_25P_LESS = INITIAL_CPI.mul(new BN(0.77)).divRound(new BN(1));
 const INITIAL_RATE = INITIAL_CPI.mul(new BN(1).pow(new BN(18))).divRound(BASE_CPI);
@@ -57,7 +59,7 @@ async function mockExternalData (rate, cpi, uFragSupply, rateValidity = true, cp
 }
 
 contract('Policy', function (accounts) {
-  before('setup Policy contract', setupContracts);
+  beforeEach('setup Policy contract', setupContracts);
 
   it('should reject any ether sent to it', async function () {
     expect(
@@ -67,26 +69,27 @@ contract('Policy', function (accounts) {
 });
 
 contract('Policy:initialize', async function (accounts) {
-  describe('initial values set correctly', function () {
-    before('setup Policy contract', setupContracts);
+  describe.only('initial values set correctly', function () {
+    beforeEach('setup Policy contract', setupContracts);
 
     it('deviationThreshold', async function () {
-      (await policy.deviationThreshold.call()).should.be.bignumber.eq(0.05e18);
+      console.log('await policy.deviationThreshold.call()', await policy.deviationThreshold.call());
+      (await policy.deviationThreshold.call()).should.be.bignumber.eq(new BN('0.05').mul(SCALE));
     });
     it('rebaseLag', async function () {
-      (await policy.rebaseLag.call()).should.be.bignumber.eq('30');
+      (await policy.rebaseLag.call()).should.be.bignumber.eq('4');
     });
     it('minRebaseTimeIntervalSec', async function () {
-      (await policy.minRebaseTimeIntervalSec.call()).should.be.bignumber.eq(24 * 60 * 60);
+      (await policy.minRebaseTimeIntervalSec.call()).should.be.bignumber.eq('86400');
     });
     it('epoch', async function () {
       (await policy.epoch.call()).should.be.bignumber.eq('0');
     });
     it('rebaseWindowOffsetSec', async function () {
-      (await policy.rebaseWindowOffsetSec.call()).should.be.bignumber.eq('72000');
+      (await policy.rebaseWindowOffsetSec.call()).should.be.bignumber.eq('0');
     });
     it('rebaseWindowLengthSec', async function () {
-      (await policy.rebaseWindowLengthSec.call()).should.be.bignumber.eq('900');
+      (await policy.rebaseWindowLengthSec.call()).should.be.bignumber.eq('86400');
     });
     it('should set owner', async function () {
       expect(await policy.owner.call()).to.eq(deployer);
@@ -98,7 +101,7 @@ contract('Policy:initialize', async function (accounts) {
 });
 
 contract('Policy:setMarketOracle', async function (accounts) {
-  before('setup Policy contract', setupContracts);
+  beforeEach('setup Policy contract', setupContracts);
 
   it('should set marketOracle', async function () {
     await policy.setMarketOracle(deployer);
@@ -107,7 +110,7 @@ contract('Policy:setMarketOracle', async function (accounts) {
 });
 
 contract('Tracker:setMarketOracle:accessControl', function (accounts) {
-  before('setup Policy contract', setupContracts);
+  beforeEach('setup Policy contract', setupContracts);
 
   it('should be callable by owner', async function () {
     expect(
@@ -123,7 +126,7 @@ contract('Tracker:setMarketOracle:accessControl', function (accounts) {
 });
 
 contract('Policy:setCpiOracle', async function (accounts) {
-  before('setup Policy contract', setupContracts);
+  beforeEach('setup Policy contract', setupContracts);
 
   it('should set cpiOracle', async function () {
     await policy.setCpiOracle(deployer);
@@ -132,7 +135,7 @@ contract('Policy:setCpiOracle', async function (accounts) {
 });
 
 contract('Tracker:setCpiOracle:accessControl', function (accounts) {
-  before('setup Policy contract', setupContracts);
+  beforeEach('setup Policy contract', setupContracts);
 
   it('should be callable by owner', async function () {
     expect(
@@ -148,7 +151,7 @@ contract('Tracker:setCpiOracle:accessControl', function (accounts) {
 });
 
 contract('Policy:setOrchestrator', async function (accounts) {
-  before('setup Policy contract', setupContracts);
+  beforeEach('setup Policy contract', setupContracts);
 
   it('should set orchestrator', async function () {
     await policy.setOrchestrator(user, {from: deployer});
@@ -157,7 +160,7 @@ contract('Policy:setOrchestrator', async function (accounts) {
 });
 
 contract('Tracker:setOrchestrator:accessControl', function (accounts) {
-  before('setup Policy contract', setupContracts);
+  beforeEach('setup Policy contract', setupContracts);
 
   it('should be callable by owner', async function () {
     expect(
@@ -174,7 +177,7 @@ contract('Tracker:setOrchestrator:accessControl', function (accounts) {
 
 contract('Policy:setDeviationThreshold', async function (accounts) {
   let prevThreshold, threshold;
-  before('setup Policy contract', async function () {
+  beforeEach('setup Policy contract', async function () {
     await setupContracts();
     prevThreshold = await policy.deviationThreshold.call();
     threshold = prevThreshold.plus(0.01e18);
@@ -187,7 +190,7 @@ contract('Policy:setDeviationThreshold', async function (accounts) {
 });
 
 contract('Tracker:setDeviationThreshold:accessControl', function (accounts) {
-  before('setup Policy contract', setupContracts);
+  beforeEach('setup Policy contract', setupContracts);
 
   it('should be callable by owner', async function () {
     expect(
@@ -204,7 +207,7 @@ contract('Tracker:setDeviationThreshold:accessControl', function (accounts) {
 
 contract('Policy:setRebaseLag', async function (accounts) {
   let prevLag;
-  before('setup Policy contract', async function () {
+  beforeEach('setup Policy contract', async function () {
     await setupContracts();
     prevLag = await policy.rebaseLag.call();
   });
@@ -227,7 +230,7 @@ contract('Policy:setRebaseLag', async function (accounts) {
 });
 
 contract('Tracker:setRebaseLag:accessControl', function (accounts) {
-  before('setup Policy contract', setupContracts);
+  beforeEach('setup Policy contract', setupContracts);
 
   it('should be callable by owner', async function () {
     expect(
@@ -243,7 +246,7 @@ contract('Tracker:setRebaseLag:accessControl', function (accounts) {
 });
 
 contract('Policy:setRebaseTimingParameters', async function (accounts) {
-  before('setup Policy contract', async function () {
+  beforeEach('setup Policy contract', async function () {
     await setupContracts();
   });
 
@@ -274,7 +277,7 @@ contract('Policy:setRebaseTimingParameters', async function (accounts) {
 });
 
 contract('Tracker:setRebaseTimingParameters:accessControl', function (accounts) {
-  before('setup Policy contract', setupContracts);
+  beforeEach('setup Policy contract', setupContracts);
 
   it('should be callable by owner', async function () {
     expect(
@@ -314,10 +317,10 @@ contract('Policy:Rebase:accessControl', async function (accounts) {
 });
 
 contract('Policy:Rebase', async function (accounts) {
-  before('setup Policy contract', setupContractsWithOpenRebaseWindow);
+  beforeEach('setup Policy contract', setupContractsWithOpenRebaseWindow);
 
   describe('when minRebaseTimeIntervalSec has NOT passed since the previous rebase', function () {
-    before(async function () {
+    beforeEach(async function () {
       await mockExternalData(INITIAL_RATE_30P_MORE, INITIAL_CPI, 1010);
       await chain.waitForSomeTime(60);
       await policy.rebase({from: orchestrator});
@@ -332,10 +335,10 @@ contract('Policy:Rebase', async function (accounts) {
 });
 
 contract('Policy:Rebase', async function (accounts) {
-  before('setup Policy contract', setupContractsWithOpenRebaseWindow);
+  beforeEach('setup Policy contract', setupContractsWithOpenRebaseWindow);
 
   describe('when rate is within deviationThreshold', function () {
-    before(async function () {
+    beforeEach(async function () {
       await policy.setRebaseTimingParameters(60, 0, 60);
     });
 
@@ -365,7 +368,7 @@ contract('Policy:Rebase', async function (accounts) {
 });
 
 contract('Policy:Rebase', async function (accounts) {
-  before('setup Policy contract', setupContractsWithOpenRebaseWindow);
+  beforeEach('setup Policy contract', setupContractsWithOpenRebaseWindow);
 
   describe('when rate is more than MAX_RATE', function () {
     it('should return same supply delta as delta for MAX_RATE', async function () {
@@ -391,10 +394,10 @@ contract('Policy:Rebase', async function (accounts) {
 });
 
 contract('Policy:Rebase', async function (accounts) {
-  before('setup Policy contract', setupContractsWithOpenRebaseWindow);
+  beforeEach('setup Policy contract', setupContractsWithOpenRebaseWindow);
 
   describe('when tracker grows beyond MAX_SUPPLY', function () {
-    before(async function () {
+    beforeEach(async function () {
       await mockExternalData(INITIAL_RATE_2X, INITIAL_CPI, MAX_SUPPLY.sub(1));
       await chain.waitForSomeTime(60);
     });
@@ -409,10 +412,10 @@ contract('Policy:Rebase', async function (accounts) {
 });
 
 contract('Policy:Rebase', async function (accounts) {
-  before('setup Policy contract', setupContractsWithOpenRebaseWindow);
+  beforeEach('setup Policy contract', setupContractsWithOpenRebaseWindow);
 
   describe('when tracker supply equals MAX_SUPPLY and rebase attempts to grow', function () {
-    before(async function () {
+    beforeEach(async function () {
       await mockExternalData(INITIAL_RATE_2X, INITIAL_CPI, MAX_SUPPLY);
       await chain.waitForSomeTime(60);
     });
@@ -425,7 +428,7 @@ contract('Policy:Rebase', async function (accounts) {
 });
 
 contract('Policy:Rebase', async function (accounts) {
-  before('setup Policy contract', setupContractsWithOpenRebaseWindow);
+  beforeEach('setup Policy contract', setupContractsWithOpenRebaseWindow);
 
   describe('when the market oracle returns invalid data', function () {
     it('should fail', async function () {
@@ -449,7 +452,7 @@ contract('Policy:Rebase', async function (accounts) {
 });
 
 contract('Policy:Rebase', async function (accounts) {
-  before('setup Policy contract', setupContractsWithOpenRebaseWindow);
+  beforeEach('setup Policy contract', setupContractsWithOpenRebaseWindow);
 
   describe('when the cpi oracle returns invalid data', function () {
     it('should fail', async function () {
@@ -473,10 +476,10 @@ contract('Policy:Rebase', async function (accounts) {
 });
 
 contract('Policy:Rebase', async function (accounts) {
-  before('setup Policy contract', setupContractsWithOpenRebaseWindow);
+  beforeEach('setup Policy contract', setupContractsWithOpenRebaseWindow);
 
   describe('positive rate and no change CPI', function () {
-    before(async function () {
+    beforeEach(async function () {
       await mockExternalData(INITIAL_RATE_30P_MORE, INITIAL_CPI, 1000);
       await policy.setRebaseTimingParameters(60, 0, 60);
       await chain.waitForSomeTime(60);
@@ -537,10 +540,10 @@ contract('Policy:Rebase', async function (accounts) {
 });
 
 contract('Policy:Rebase', async function (accounts) {
-  before('setup Policy contract', setupContractsWithOpenRebaseWindow);
+  beforeEach('setup Policy contract', setupContractsWithOpenRebaseWindow);
 
   describe('negative rate', function () {
-    before(async function () {
+    beforeEach(async function () {
       await mockExternalData(INITIAL_RATE_30P_LESS, INITIAL_CPI, 1000);
       await chain.waitForSomeTime(60);
       r = await policy.rebase({from: orchestrator});
@@ -555,10 +558,10 @@ contract('Policy:Rebase', async function (accounts) {
 });
 
 contract('Policy:Rebase', async function (accounts) {
-  before('setup Policy contract', setupContractsWithOpenRebaseWindow);
+  beforeEach('setup Policy contract', setupContractsWithOpenRebaseWindow);
 
   describe('when cpi increases', function () {
-    before(async function () {
+    beforeEach(async function () {
       await mockExternalData(INITIAL_RATE, INITIAL_CPI_25P_MORE, 1000);
       await chain.waitForSomeTime(60);
       await policy.setDeviationThreshold(0);
@@ -574,10 +577,10 @@ contract('Policy:Rebase', async function (accounts) {
 });
 
 contract('Policy:Rebase', async function (accounts) {
-  before('setup Policy contract', setupContractsWithOpenRebaseWindow);
+  beforeEach('setup Policy contract', setupContractsWithOpenRebaseWindow);
 
   describe('when cpi decreases', function () {
-    before(async function () {
+    beforeEach(async function () {
       await mockExternalData(INITIAL_RATE, INITIAL_CPI_25P_LESS, 1000);
       await chain.waitForSomeTime(60);
       await policy.setDeviationThreshold(0);
@@ -593,10 +596,10 @@ contract('Policy:Rebase', async function (accounts) {
 });
 
 contract('Policy:Rebase', async function (accounts) {
-  before('setup Policy contract', setupContractsWithOpenRebaseWindow);
+  beforeEach('setup Policy contract', setupContractsWithOpenRebaseWindow);
 
   describe('rate=TARGET_RATE', function () {
-    before(async function () {
+    beforeEach(async function () {
       await mockExternalData(INITIAL_RATE, INITIAL_CPI, 1000);
       await policy.setDeviationThreshold(0);
       await chain.waitForSomeTime(60);
