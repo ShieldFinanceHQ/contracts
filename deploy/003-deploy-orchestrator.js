@@ -11,8 +11,7 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId, network }) 
   });
 
   let domain = `${network.name === 'mainnet' ? '' : (network.name + '.')}etherscan.io`;
-
-  console.info('Orchestrator: ', `https://${domain}/address/${orchestrator.address}`);
+  console.info('Orchestrator:', `https://${domain}/address/${orchestrator.address}`);
   console.info(`${basename(__filename)} executed`);
 };
 
