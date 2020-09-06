@@ -1,4 +1,12 @@
-require('dotenv').config();
+const _ = require('lodash');
+const $HOME = require('os').homedir();
+const fs = require('fs');
+const configFilename = $HOME + '/.crypto/config.json';
+
+let config = {};
+if (fs.existsSync(configFilename)) {
+  config = require(configFilename);
+}
 
 usePlugin('@nomiclabs/buidler-truffle5');
 // usePlugin('@nomiclabs/buidler-waffle');
@@ -21,41 +29,33 @@ task('accounts', 'Prints the list of accounts', async () => {
 // This object can have the following optional entries:
 // defaultNetwork, networks, solc, and paths.
 // Go to https://buidler.dev/config/ to learn more
-module.exports = {
+module.exports = _.merge(config['buidler'], {
   networks: {
     buidlerevm: {},
-    ropsten: {
-      url: process.env.ROPSTEN_URL,
-      from: process.env.ROPSTEN_FROM,
-      accounts: process.env.ROPSTEN_PRIVATE_KEYS.split(',')
-    },
-    mainnet: {
-      url: process.env.MAINNET_URL,
-      from: process.env.MAINNET_FROM,
-      accounts: process.env.MAINNET_PRIVATE_KEYS.split(',')
-    }
+    ropsten: { /* merged from config.json */ },
+    mainnet: { /* merged from config.json */ },
   },
   solc: {
     version: '0.6.12',
-    optimizer: { enabled: true, runs: 200 }
+    optimizer: { enabled: true, runs: 200 },
   },
   spdxLicenseIdentifier: {
     overwrite: false,
-    runOnCompile: true
+    runOnCompile: true,
   },
   namedAccounts: {
     deployer: {
-      default: 0 // here this will by default take the first account as deployer
+      default: 0, // here this will by default take the first account as deployer
       // 4: '0xffffeffffff', // but for rinkeby it will be a specific address
       // "specialnetwork": "0xf34e...", //it can also specify a specific netwotk name (specified in buidler.config.js)
     },
     user: {
-      default: 1 // here this will by default take the second account as user (so in the test this will be a different account than the deployer)
+      default: 1, // here this will by default take the second account as user (so in the test this will be a different account than the deployer)
       //   1: '0xffffeaaa', // on the mainnet the user could be a multi sig
       //   4: '0xaaaeffffff', // on rinkeby it could be another account
-    }
-  }
-};
+    },
+  },
+});
 
 // Old Truffle config:
 //
