@@ -8,9 +8,10 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId, network }) 
     proxy: true,
     from: deployer,
     args: [],
+    log: true
   });
 
-  let domain = `${network.name === 'mainnet' ? '' : (network.name + '.')}etherscan.io`;
+  const domain = `${network.name === 'mainnet' ? '' : (network.name + '.')}etherscan.io`;
   console.info('Policy:', `https://${domain}/address/${policy.address}`);
   console.info(`${basename(__filename)} executed`);
 };
