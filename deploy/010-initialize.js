@@ -1,7 +1,7 @@
 const { basename } = require('path');
 
 module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
-  const { get, execute } = deployments;
+  const { get, read, execute } = deployments;
   const { deployer } = await getNamedAccounts();
 
   const tracker = await get('Tracker');
@@ -13,13 +13,17 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   const policyInitialize = await execute('Policy', { from: deployer }, 'initialize', tracker.address).catch(ignoreErrorIfInitialized);
   const orchestratorInitialize = await execute('Orchestrator', { from: deployer }, 'initialize', policy.address).catch(ignoreErrorIfInitialized);
 
-  const trackerSetPolicy = await execute('Tracker', { from: deployer }, 'setPolicy', policy.address);
-  const policySetOrchestrator = await execute('Policy', { from: deployer }, 'setOrchestrator', orchestrator.address);
+  // Not needed: the higher-order contracts call set* methods on their subordinates
+  // const trackerSetPolicy = await execute('Tracker', { from: deployer }, 'setPolicy', policy.address);
+  // const policySetOrchestrator = await execute('Policy', { from: deployer }, 'setOrchestrator', orchestrator.address);
+
+  // const result = await read('Tracker', { from: deployer }, 'policy');
+  // console.log('result', result);
 
   console.info(`${basename(__filename)} executed`);
 };
 
-function ignoreErrorIfInitialized(error) {
+function ignoreErrorIfInitialized (error) {
   if (error.message.includes('always failing transaction')) {
     return;
   }

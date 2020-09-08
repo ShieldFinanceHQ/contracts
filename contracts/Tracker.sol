@@ -8,6 +8,8 @@ import "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
 import "./lib/ERC20.sol";
 import "./lib/SafeMathInt.sol";
 
+import "@nomiclabs/buidler/console.sol";
+
 /**
  * @title Tracker ERC20 token
  * @dev Balances are internally represented with a hidden denomination, 'gons'.
@@ -84,6 +86,7 @@ contract Tracker is ERC20UpgradeSafe, OwnableUpgradeSafe {
         external
     {
         require(msg.sender == owner() || tx.origin == owner(), "Only owner can execute this function");
+        policy = policy_;
         emit LogPolicyUpdated(policy_);
     }
 
