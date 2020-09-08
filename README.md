@@ -19,29 +19,20 @@ Tracker token supply depends on an external variable. This way, tracker tokens m
 
 ```bash
 # Install project dependencies
-npm install
-
-# Install ethereum local blockchain(s) and associated dependencies
-npx setup-local-chains
+yarn install
 ```
 
 ## Test
 
 ``` bash
-# You can use the following command to start a local blockchain instance
-npx start-chain [ganacheUnitTest|gethUnitTest]
-
 # Run all unit tests
-npm test
-
-# Run unit tests in isolation
-npx truffle --network ganacheUnitTest test test/unit/uFragments.js
+yarn test
 
 # Lint code
-npm run lint
+yarn lint
 
 # View code coverage
-npm run coverage
+yarn coverage
 ```
 
 ## Addresses (mainnet)
