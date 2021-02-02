@@ -1,19 +1,13 @@
-# Tracker Token
+# Shield Finance Smart Contracts
 
 ## Overview
 
-Let's say you want to bet that FTX exchange volume will increase. How can you do it?
+Shield is a smart contract that provides “liquidity options” — a new instrument to protect your investments from downside risk.
 
-Well, you can buy the FTX token - but its price has so many variables involved. For example, a whale might dump a lot of tokens at once, momentarily crashing the price. Or they may announce staking for the token, driving it upwards.
+🛡 Buy insurance against rug pulls
+💰 Receive payout if your token is rugged
 
-**If you want to bet on a specific number going up or down, you need a specialized financial instrument: a tracker token.** 
-
-Tracker token supply depends on an external variable. This way, tracker tokens mimic perpetual swaps, but without the counterparty risk of keeping the funds on exchange. With tracker tokens, you can bet on a specific number going up or down - in a trustless, decentralized way.
-
-## Examples
-
-* [FTX Volume Token](https://medium.com/@dengorbachev/ftx-volume-token-da8f187a3a69)
-* ... more tracker tokens coming soon
+Read the [Medium article](https://medium.com/@coin-hunt-group/rugshield-defi-liquidity-options-4d942c0210b5) to learn how it works.
 
 ## Install
 
@@ -38,15 +32,11 @@ yarn coverage
 ## Addresses (mainnet)
 
 - ERC-20 Token: [TODO](https://etherscan.io/token/TODO)
-- Supply Policy: [TODO](https://etherscan.io/address/TODO)
-- Orchestrator: [TODO](https://etherscan.io/address/TODO)
+- Pool: [TODO](https://etherscan.io/address/TODO)
+- Contract: [TODO](https://etherscan.io/address/TODO)
 
 ## Addresses (testnet)
 
 - ERC-20 Token: [TODO](https://kovan.etherscan.io/token/TODO)
-- Supply Policy: [TODO](https://kovan.etherscan.io/address/TODO)
-- Orchestrator: [TODO](https://kovan.etherscan.io/address/TODO)
-
-## Notes
-
-* [Avoiding Initial Values in Field Declarations](https://docs.openzeppelin.com/upgrades/2.8/writing-upgradeable#avoid-initial-values-in-field-declarations)
+- Pool: [TODO](https://etherscan.io/address/TODO)
+- Contract: [TODO](https://etherscan.io/address/TODO)
