@@ -40,3 +40,16 @@ yarn coverage
 - ERC-20 Token: [TODO](https://kovan.etherscan.io/token/TODO)
 - Pool: [TODO](https://etherscan.io/address/TODO)
 - Contract: [TODO](https://etherscan.io/address/TODO)
+
+## Technical documentation
+
+### Events
+
+* User creates a shield contract (sends transaction)
+* User buys protection (calls smart contract `buy` function)
+* User sells protection (calls smart contract `sell` function)
+* User claims protection
+* User claims premium
+* User withdraws liquidity from target pool
+* Time passes past funding window
+* Time passes past active window

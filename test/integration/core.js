@@ -1,6 +1,16 @@
 const { deployments, getNamedAccounts } = require('@nomiclabs/buidler');
 const { fixture, get, read, execute } = deployments;
 
+/**
+ * It should not allow the user to create a pool with overlapping dates (?)
+ * It should not allow the user to claim protection if the liquidity has not been withdrawn
+ * It should be able to calculate the high water mark from on-chain events
+ * It should not allow to fund the contract past funding deadline
+ * It should allow to claim protection before claiming deadline (?)
+ * It should not allow to claim protection after claiming deadline
+ * It should not allow to claim premium before claiming deadline
+ */
+
 const BN = web3.utils.BN;
 
 require('chai')
