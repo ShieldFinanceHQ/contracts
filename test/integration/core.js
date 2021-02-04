@@ -1,5 +1,8 @@
-const { deployments, getNamedAccounts } = require('@nomiclabs/hardhat');
-const { fixture, get, read, execute } = deployments;
+import { DeployCommand } from '../support/DeployCommand.js'
+
+const { deployments, getNamedAccounts } = require('hardhat')
+const { fixture, get, read, execute } = deployments
+const fc = require('fast-check')
 
 /**
  * It should not allow the user to create a pool with overlapping dates (?)
@@ -11,73 +14,42 @@ const { fixture, get, read, execute } = deployments;
  * It should not allow to claim premium before claiming deadline
  */
 
-const BN = web3.utils.BN;
+const BN = web3.utils.BN
 
 require('chai')
   .use(require('chai-bn')(BN))
-  .should();
+  .should()
 
-describe('Rebase', () => {
+describe('Shield', () => {
   beforeEach(async () => {
-    await fixture();
-  });
+    await fixture()
+  })
 
-  it('should not change supply if rebase arguments are the same', async function () {
+  it('should ', async function () {
     const allCommands = [
       // fc.integer().map(v => new PushCommand(v)),
       fc.constant(new DeployCommand()),
       // fc.constant(new SizeCommand())
-    ];
+    ]
 
-    fc.assert(
-      fc.property(fc.commands(allCommands, 100), cmds => {
-        const s = () => ({ model: { num: 0 }, real: new List() });
-        fc.modelRun(s, cmds);
-      })
-    );
+    await fc.assert(
+      fc.asyncProperty(fc.commands(allCommands, { maxCommands: 100 }), commands => {
+        const state = async () => ({
+          model: {},
+          real: {},
+        })
+        return fc.asyncModelRun(state, commands)
+      }),
+    )
 
-    const { deployer, user } = await getNamedAccounts();
+    // const { deployer, user } = await getNamedAccounts()
     // const tracker = await get('Tracker');
     // const orchestrator = await get('Orchestrator');
 
-    const totalSupplyBeforeRebase = await read('Tracker', { from: user }, 'totalSupply');
-    const rebaseResult = await execute('Orchestrator', { from: deployer }, 'rebase', '653313740501264965', '653313740501264965');
-    const totalSupplyAfterRebase = await read('Tracker', { from: user }, 'totalSupply');
-
-    totalSupplyAfterRebase.should.be.deep.eq(totalSupplyBeforeRebase);
-  });
-
-  it('should change supply if rebase arguments are the same', async function () {
-    const { deployer, user } = await getNamedAccounts();
-
-    const totalSupplyBeforeRebase = await read('Tracker', { from: user }, 'totalSupply');
-    const rebaseResult = await execute('Orchestrator', { from: deployer }, 'rebase', '653313740501264965', '326656870250632482');
-    const totalSupplyAfterRebase = await read('Tracker', { from: user }, 'totalSupply');
-
-    totalSupplyAfterRebase.should.be.deep.eq(totalSupplyBeforeRebase);
-  });
-
-  /*
- * it 'changes supply after rebase'
- * deploy contracts
- * rebase
- * assert totalSupply changed
- */
-
-  /*
-   * it 'upgrades contracts'
-   * Change contract code
-   *    Multiple totalSupply by 2 after rebase
-   * Switch to the upgradable version
-   * Rebase
-   * assert totalSupply
-   */
-
-  /*
-   * it 'doesn't change state if paused'
-   * Pause
-   * For every function
-   *  call function
-   *  assert transaction reverts
-   */
-});
+    // const totalSupplyBeforeRebase = await read('Tracker', { from: user }, 'totalSupply')
+    // const rebaseResult = await execute('Orchestrator', { from: deployer }, 'rebase', '653313740501264965', '653313740501264965')
+    // const totalSupplyAfterRebase = await read('Tracker', { from: user }, 'totalSupply')
+    //
+    // totalSupplyAfterRebase.should.be.deep.eq(totalSupplyBeforeRebase)
+  })
+})
