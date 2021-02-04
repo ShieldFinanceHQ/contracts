@@ -3,10 +3,10 @@ module.exports = {
   env: {
     mocha: true,
     node: true,
-    es6: true
+    es6: true,
   },
   parserOptions: {
-    ecmaVersion: 8
+    ecmaVersion: 8,
   },
   globals: {
     artifacts: true,
@@ -14,7 +14,7 @@ module.exports = {
     contract: true,
     expect: true,
     Promise: true,
-    web3: true
+    web3: true,
   },
   plugins: ['prettier', 'chai-friendly'],
   rules: {
@@ -24,6 +24,7 @@ module.exports = {
     'semi': [2, 'never'],
     'prefer-const': 2,
     'no-unused-expressions': 0,
-    'chai-friendly/no-unused-expressions': 2
-  }
+    'chai-friendly/no-unused-expressions': 2,
+    'comma-dangle': ['error', 'always-multiline'],
+  },
 }
