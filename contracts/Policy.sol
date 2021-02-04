@@ -9,7 +9,7 @@ import "./lib/SafeMathInt.sol";
 import "./lib/UInt256Lib.sol";
 import "./Tracker.sol";
 
-import "@nomiclabs/buidler/console.sol";
+import "@nomiclabs/hardhat/console.sol";
 
 interface IOracle {
     function getData() external returns (uint256, bool);

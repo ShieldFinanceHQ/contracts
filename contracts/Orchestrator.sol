@@ -6,7 +6,7 @@ import "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
 
 import "./Policy.sol";
 
-import "@nomiclabs/buidler/console.sol";
+import "@nomiclabs/hardhat/console.sol";
 
 /**
  * @title Orchestrator

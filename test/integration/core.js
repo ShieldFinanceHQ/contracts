@@ -1,4 +1,4 @@
-const { deployments, getNamedAccounts } = require('@nomiclabs/buidler');
+const { deployments, getNamedAccounts } = require('@nomiclabs/hardhat');
 const { fixture, get, read, execute } = deployments;
 
 /**
@@ -17,13 +17,25 @@ require('chai')
   .use(require('chai-bn')(BN))
   .should();
 
-// Vanilla Mocha test. Increased compatibility with tools that integrate Mocha.
 describe('Rebase', () => {
   beforeEach(async () => {
     await fixture();
   });
 
   it('should not change supply if rebase arguments are the same', async function () {
+    const allCommands = [
+      // fc.integer().map(v => new PushCommand(v)),
+      fc.constant(new DeployCommand()),
+      // fc.constant(new SizeCommand())
+    ];
+
+    fc.assert(
+      fc.property(fc.commands(allCommands, 100), cmds => {
+        const s = () => ({ model: { num: 0 }, real: new List() });
+        fc.modelRun(s, cmds);
+      })
+    );
+
     const { deployer, user } = await getNamedAccounts();
     // const tracker = await get('Tracker');
     // const orchestrator = await get('Orchestrator');

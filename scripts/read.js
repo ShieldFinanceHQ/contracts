@@ -1,8 +1,8 @@
-// We require the Buidler Runtime Environment explicitly here. This is optional
+// We require the hardhat Runtime Environment explicitly here. This is optional
 // but useful for running the script in a standalone fashion through `node <script>`.
-// When running the script with `buidler run <script>` you'll find the Buidler
+// When running the script with `hardhat run <script>` you'll find the hardhat
 // Runtime Environment's members available in the global scope.
-const bre = require('@nomiclabs/buidler');
+const bre = require('@nomiclabs/hardhat');
 const { deployments, getNamedAccounts } = bre;
 
 async function main () {
@@ -20,7 +20,7 @@ async function main () {
 
   // // We get the contract to deploy
   // const Greeter = await ethers.getContractFactory("Greeter");
-  // const greeter = await Greeter.deploy("Hello, Buidler!");
+  // const greeter = await Greeter.deploy("Hello, hardhat!");
   //
   // await greeter.deployed();
   //

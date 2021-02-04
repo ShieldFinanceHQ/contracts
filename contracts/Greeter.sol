@@ -2,7 +2,7 @@
 
 pragma solidity ^0.6.8;
 
-import "@nomiclabs/buidler/console.sol";
+import "@nomiclabs/hardhat/console.sol";
 
 
 contract Greeter {

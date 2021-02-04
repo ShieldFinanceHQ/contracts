@@ -25,15 +25,15 @@ const argv = require('yargs') // eslint-disable-line
   })
   .argv;
 
-process.env.BUIDLER_NETWORK = argv['network'];
-process.env.BUIDLER_SHOW_STACK_TRACES = true;
-process.env.BUIDLER_VERBOSE = argv['verbose'];
+process.env.hardhat_NETWORK = argv['network'];
+process.env.hardhat_SHOW_STACK_TRACES = true;
+process.env.hardhat_VERBOSE = argv['verbose'];
 
-// We require the Buidler Runtime Environment explicitly here. This is optional
+// We require the hardhat Runtime Environment explicitly here. This is optional
 // but useful for running the script in a standalone fashion through `node <script>`.
-// When running the script with `buidler run <script>` you'll find the Buidler
+// When running the script with `hardhat run <script>` you'll find the hardhat
 // Runtime Environment's members available in the global scope.
-const bre = require('@nomiclabs/buidler');
+const bre = require('@nomiclabs/hardhat');
 const { deployments, getNamedAccounts } = bre;
 const { BN } = require('ethereumjs-util');
 

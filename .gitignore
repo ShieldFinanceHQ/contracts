@@ -60,9 +60,12 @@ crashlytics-build.properties
 fabric.properties
 
 # NodeJS dependencies
-node_modules/*
+node_modules
 
-# ES-Lint
+# Yarn
+yarn-error.log
+
+# ESLint
 .eslintcache
 
 # Solidity-Coverage
@@ -77,13 +80,11 @@ coverageEnv/
 .openzeppelin/dev-*.json
 .openzeppelin/.session
 
-node_modules
-
-# Buidler files
+# hardhat files
 cache
 artifacts
 contractsInfo.json
-deployments/buidlerevm*
+deployments/hardhatevm*
 deployments/localhost*
 
 # dotenv

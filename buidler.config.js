@@ -8,15 +8,15 @@ if (fs.existsSync(configFilename)) {
   config = require(configFilename);
 }
 
-usePlugin('@nomiclabs/buidler-truffle5');
-// usePlugin('@nomiclabs/buidler-waffle');
-// usePlugin('@nomiclabs/buidler-ethers');
-usePlugin('@openzeppelin/buidler-upgrades');
-// usePlugin('buidler-spdx-license-identifier');
-usePlugin('buidler-deploy');
+usePlugin('@nomiclabs/hardhat-truffle5');
+// usePlugin('@nomiclabs/hardhat-waffle');
+// usePlugin('@nomiclabs/hardhat-ethers');
+usePlugin('@openzeppelin/hardhat-upgrades');
+// usePlugin('hardhat-spdx-license-identifier');
+usePlugin('hardhat-deploy');
 
-// This is a sample Buidler task. To learn how to create your own go to
-// https://buidler.dev/guides/create-task.html
+// This is a sample hardhat task. To learn how to create your own go to
+// https://hardhat.dev/guides/create-task.html
 task('accounts', 'Prints the list of accounts', async () => {
   const accounts = await ethers.getSigners();
 
@@ -28,10 +28,10 @@ task('accounts', 'Prints the list of accounts', async () => {
 // You have to export an object to set up your config
 // This object can have the following optional entries:
 // defaultNetwork, networks, solc, and paths.
-// Go to https://buidler.dev/config/ to learn more
-module.exports = _.merge(config['buidler'], {
+// Go to https://hardhat.dev/config/ to learn more
+module.exports = _.merge(config['hardhat'], {
   networks: {
-    buidlerevm: {},
+    hardhatevm: {},
     ropsten: { /* merged from config.json */ },
     mainnet: { /* merged from config.json */ },
   },
@@ -47,7 +47,7 @@ module.exports = _.merge(config['buidler'], {
     deployer: {
       default: 0, // here this will by default take the first account as deployer
       // 4: '0xffffeffffff', // but for rinkeby it will be a specific address
-      // "specialnetwork": "0xf34e...", //it can also specify a specific netwotk name (specified in buidler.config.js)
+      // "specialnetwork": "0xf34e...", //it can also specify a specific netwotk name (specified in hardhat.config.js)
     },
     user: {
       default: 1, // here this will by default take the second account as user (so in the test this will be a different account than the deployer)
