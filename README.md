@@ -61,6 +61,113 @@ yarn install
 
 ## Technical documentation
 
+### Deployment
+
+* Anybody can deploy a new Shield contract.
+* Anybody can call public methods of a new Shield contract.
+
+### Usage
+
+* When deploying a new Shield contract, the user must send a transaction calling the "[initialize](#initialize-method)" method.
+* To receive compensation (if rug pull happens), the user must send a transaction calling the "[withdraw](#withdraw-method)" method.
+* To receive premium "protection money" (if rug pull doesn’t happen), the user must send a transaction calling the "[withdraw](#withdraw-method)" method (yes, same as for compensation).
+* To receive the right for compensation / premium, the user must send a transaction calling the "[deposit](#deposit-method)" method (before withdrawing, of course).
+
+#### initialize method
+
+Parameters:
+
+* [Liquidity pool address](#liquidity-pool-address)
+* [Deposit deadline block number](#deposit-deadline-block-number)
+* [Withdraw deadline block number](#withdraw-deadline-block-number)
+
+
+#### deposit method
+
+Parameters:
+
+* Is a Trader (boolean: true for Traders, false for Protectors)
+
+deposit method allows the user to fund the contract. By funding the contract, the user secures the right to receive the compensation (for Traders) or premium (for Protectors) by calling the "[withdraw](#withdraw-method)" method later.
+
+Notes:
+
+* deposit method must be called individually by each user.
+* deposit method can be called multiple times by each user.
+* deposit method can be called with a different "Is a Trader" parameter by each user ([see FAQ](#faq)).
+* deposit method must be called with some ETH (will be added to Traders fund or Protectors fund, depending on "Is a Trader" parameter).
+* deposit method must be called before the [Deposit deadline block number](#deposit-deadline-block-number) by both Traders and Protectors.
+
+#### withdraw method
+
+Parameters: none
+
+withdraw method allows to receive the compensation (for Traders) or premium (for Protectors):
+
+For Traders:
+
+* `your_compensation = your_share * protectors_fund`
+* `your_share = your_deposit / traders_fund`
+* `traders_fund = sum(traders_deposits)`
+* `protectors_fund = sum(protectors_deposits)`
+
+For Protectors:
+
+* `your_premium = your_share * traders_fund`
+* `your_share = your_deposit / protectors_fund`
+* `traders_fund = sum(traders_deposits)`
+* `protectors_fund = sum(protectors_deposits)`
+
+Notes:
+
+* `withdraw` method must be called from the same address as the "[deposit](#deposit-method)" method.
+* `withdraw` method must be called before the [Withdraw deadline block number](#withdraw-deadline-block-number) by Traders.
+* `withdraw` method must be called after the [Withdraw deadline block number](#withdraw-deadline-block-number) by Protectors.
+
+
+#### Liquidity pool address
+
+Examples:
+
+* 0xa7e6b2ce535b83e82ab598e9e432705f8d7ce929 ([CHT-ETH pool on Uniswap](https://info.uniswap.org/token/0xa7e6b2ce535b83e82ab598e9e432705f8d7ce929))
+* 0xd3d2e2692501a5c9ca623199d38826e513033a17 ([UNI-ETH pool on Uniswap](https://info.uniswap.org/pair/0xd3d2e2692501a5c9ca623199d38826e513033a17))
+* 0x795065dcc9f64b5614c407a6efdc400da6221fb0 ([SUSHI-ETH pool on Sushiswap](https://www.sushiswap.fi/pair/0x795065dcc9f64b5614c407a6efdc400da6221fb0))
+
+A single Shield contract protects a single liquidity pool.
+
+It is possible to deploy multiple Shield contracts that protect the same liquidity pool, because they can have different deadlines ([Deposit deadline block number](#deposit-deadline-block-number) and [Withdraw deadline block number](#withdraw-deadline-block-number))
+
+#### Deposit deadline block number
+
+Examples:
+
+* 11781922 (Ethereum block #11781922, [already mined](https://etherscan.io/block/11781922))
+* 118000000 (Ethereum block #118000000, not mined yet)
+* 118293934 (Ethereum block #118293934, not mined yet)
+
+Deposit deadline motivates the Traders & Protectors to fund the contract. They should only send funds to the contract before the Deposit deadline. If anybody sends the funds to the contract after the Deposit deadline, the transaction will be reverted.
+
+Deposit deadline must be at least ~1 day in future (5760 blocks in future) from when the contract is deployed.
+
+#### Withdraw deadline block number
+
+* 118000000 (Ethereum block #118000000, not mined yet)
+* 118293934 (Ethereum block #118293934, not mined yet)
+* 119483848 (Ethereum block #119483848, not mined yet)
+
+Withdraw deadline prevents the Protectors from withdrawing their money too early. It provides time for Traders to withdraw their compensation if the rug pull actually happens. Note that Traders can withdraw only if the rug pull happens on the liquidity pool that is protected by that specific Shield contract (because a single Shield contract protects a single liquidity pool).
+
+### FAQ
+
+**What if the user deposits 10 ETH as a Trader, then deposits 100 ETH as a Protector?**
+
+There is no conflict:
+
+* If rug pull happens, the user will receive his compensation as a Trader
+* If rug pull doesn’t happen, the user will receive his premium as a Protector
+
+Of course, if the user makes a double-sided deposit, he will lose some of his money anyway (because he’s betting on two exclusive outcomes at the same time, and there are other Traders / Protectors who will receive a part of one of his deposits).
+
 ### Events
 
 * Deploy shield contract
