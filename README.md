@@ -69,8 +69,8 @@ Shield can work on every blockchain. We’ll deploy on Ethereum first, then Bina
 ### Usage
 
 * Call [initialize](#initialize-method) method after deployment to activate the Shield contract.
-* Call [deposit](#deposit-method) method as Trader to receive the right for compensation in future (if you think rug pull is likely to happen).
-* Call [deposit](#deposit-method) method as Protector to receive the right for premium in future (if you think rug pull is unlikely to happen). 
+* Call [deposit](#deposit-method) method as Trader to receive the right for compensation in future (if you think rug pull is likely).
+* Call [deposit](#deposit-method) method as Protector to receive the right for premium in future (if you think rug pull is unlikely). 
 * Call [withdraw](#withdraw-method) method as Trader to receive compensation (if rug pull happens).
 * Call [withdraw](#withdraw-method) method as Protector to receive premium (if rug pull doesn't happen).
 
@@ -82,6 +82,7 @@ Parameters:
 * [Deposit deadline block number](#deposit-deadline-block-number)
 * [Withdraw deadline block number](#withdraw-deadline-block-number)
 
+initialize method activates the Shield contract by providing required parameters. 
 
 #### deposit method
 
