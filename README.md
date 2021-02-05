@@ -1,12 +1,12 @@
 # Shield contract
 
-[![Telegram](/img/rug-pull.png?raw=true "Join Telegram")](https://t.me/ShieldFinanceHQ)
+[![Telegram](./img/telegram-fill.svg?raw=true&sanitize=true "Join Telegram")](https://t.me/ShieldFinanceHQ)
 
 Shield is a smart contract that compensates your losses from rug pulls.
 
 Learn how it works:
 
-![Shield - How it works](/img/rug-pull.png?raw=true "How it works")
+![Shield - How it works](./img/rug-pull.png?raw=true "How it works")
 
 ## Install
 
