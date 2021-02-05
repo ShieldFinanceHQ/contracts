@@ -2,21 +2,21 @@
 // but useful for running the script in a standalone fashion through `node <script>`.
 // When running the script with `hardhat run <script>` you'll find the hardhat
 // Runtime Environment's members available in the global scope.
-const bre = require('@nomiclabs/hardhat');
-const { deployments, getNamedAccounts } = bre;
+const bre = require('@nomiclabs/hardhat')
+const { deployments, getNamedAccounts } = bre
 
 async function main () {
-  const { read, execute } = deployments;
-  const { user } = await getNamedAccounts();
+  const { read, execute } = deployments
+  const { user } = await getNamedAccounts()
 
-  const name = await read('Tracker', { from: user }, 'name');
-  console.info('Name: ', name);
+  const name = await read('Tracker', { from: user }, 'name')
+  console.info('Name: ', name)
 
-  const symbol = await read('Tracker', { from: user }, 'symbol');
-  console.info('Symbol: ', symbol);
+  const symbol = await read('Tracker', { from: user }, 'symbol')
+  console.info('Symbol: ', symbol)
 
-  const totalSupply = await read('Tracker', { from: user }, 'totalSupply');
-  console.info('Total supply: ', totalSupply.toString());
+  const totalSupply = await read('Tracker', { from: user }, 'totalSupply')
+  console.info('Total supply: ', totalSupply.toString())
 
   // // We get the contract to deploy
   // const Greeter = await ethers.getContractFactory("Greeter");
@@ -32,6 +32,6 @@ async function main () {
 main()
   .then(() => process.exit(0))
   .catch(error => {
-    console.error(error);
-    process.exit(1);
-  });
+    console.error(error)
+    process.exit(1)
+  })
