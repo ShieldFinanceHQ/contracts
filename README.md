@@ -8,9 +8,16 @@
 
 Shield is a smart contract that compensates your losses from rug pulls.
 
-Here's how it works:
+[Jump to contents](#contents) or see here's how it works:
 
 ![Shield - How it works](img/example.png?raw=true "How it works")
+
+## Contents
+
+* [How it works](#how-it-works)
+* [Exchanges](#exchanges)
+* [Blockchains](#blockchains)
+* [Technical documentation](#technical-documentation)
 
 ## How it works
 
@@ -51,13 +58,6 @@ Shield can work on every blockchain. We’ll deploy on Ethereum first, then Bina
 ![Ethereum](./img/ethereum.png?raw=true&sanitize=true "Ethereum")
 ![Binance chain](./img/binance-chain.png?raw=true&sanitize=true "Binance chain")
 ![Polkadot](./img/polkadot.png?raw=true&sanitize=true "Polkadot")
-
-## Install
-
-```bash
-# git clone $REPO_URL
-yarn install
-```
 
 ## Technical documentation
 
@@ -178,6 +178,13 @@ Of course, if the user makes a double-sided deposit, he will lose some of his mo
 * Pull the rug as malicious actor
 * Advance time past deposit deadline
 * Advance time past withdraw deadline
+
+## Install
+
+```bash
+# git clone $REPO_URL
+yarn install
+```
 
 ## Credits
 
