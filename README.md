@@ -44,6 +44,15 @@ Shield can work on every exchange. We’ll implement it for Uniswap first, then 
 
 If you want to be notified when we launch on Uniswap & Sushiswap, please [join our Telegram](https://t.me/ShieldFinanceHQ). 
 
+## Blockchains
+
+Shield can work on every blockchain. We’ll deploy on Ethereum first, then Binance Smart Chain, then Polkadot.
+
+![Ethereum](./img/ethereum.png?raw=true&sanitize=true "Ethereum")
+![Binance chain](./img/binance-chain.png?raw=true&sanitize=true "Binance chain")
+![Polkadot](./img/polkadot.png?raw=true&sanitize=true "Polkadot")
+
+
 ## Why CoinHunt Token?
 
 CoinHunt Token (CHT) is used because Shield is a project of CoinHunt development group. We are looking forward to releasing more projects that buy & burn CHT.
