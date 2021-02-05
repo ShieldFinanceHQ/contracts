@@ -74,7 +74,7 @@ Shield can work on every blockchain. We’ll deploy on Ethereum first, then Bina
 * Call [withdraw](#withdraw-method) method as Trader to receive compensation (if rug pull happens).
 * Call [withdraw](#withdraw-method) method as Protector to receive premium (if rug pull doesn't happen).
 
-#### initialize method
+#### Initialize method
 
 Parameters:
 
@@ -84,7 +84,7 @@ Parameters:
 
 initialize method activates the Shield contract by providing required parameters. 
 
-#### deposit method
+#### Deposit method
 
 Parameters:
 
@@ -100,7 +100,7 @@ Notes:
 * deposit method must be called with some ETH (will be added to Traders fund or Protectors fund, depending on "Is a Trader" parameter).
 * deposit method must be called before the [Deposit deadline block number](#deposit-deadline-block-number) by both Traders and Protectors.
 
-#### withdraw method
+#### Withdraw method
 
 Parameters: none
 
