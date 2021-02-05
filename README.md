@@ -177,7 +177,7 @@ Of course, if the user makes a double-sided deposit, he will lose some of his mo
 * Deposit into shield contract as a protector
 * Withdraw from shield contract as a trader (if rug pull happens)
 * Withdraw from shield contract as a protector (if rug pull doesn't happen)
-* Pull the rug as malicious actor
+* Rug pull (done by a malicious actor)
 * Advance time past deposit deadline
 * Advance time past withdraw deadline
 
