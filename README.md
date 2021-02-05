@@ -2,6 +2,8 @@
 
 Shield is a smart contract that compensates your losses from rug pulls.
 
+Learn how it works:
+
 ![Shield - How it works](/img/rug-pull.png?raw=true "How it works")
 
 ## Install
