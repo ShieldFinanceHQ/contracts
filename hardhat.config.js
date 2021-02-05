@@ -1,43 +1,45 @@
-const _ = require('lodash');
-const $HOME = require('os').homedir();
-const fs = require('fs');
-const configFilename = $HOME + '/.crypto/config.json';
+const _ = require('lodash')
+const $HOME = require('os').homedir()
+const fs = require('fs')
+const configFilename = $HOME + '/.crypto/config.json'
+require('@nomiclabs/hardhat-truffle5')
+require('@nomiclabs/hardhat-waffle')
+// require('@openzeppelin/buidler-upgrades')
+// require('hardhat-spdx-license-identifier');
+require('hardhat-deploy')
 
-let config = {};
+let config = {}
 if (fs.existsSync(configFilename)) {
-  config = require(configFilename);
+  config = require(configFilename)
 }
-
-usePlugin('@nomiclabs/hardhat-truffle5');
-// usePlugin('@nomiclabs/hardhat-waffle');
-// usePlugin('@nomiclabs/hardhat-ethers');
-usePlugin('@openzeppelin/hardhat-upgrades');
-// usePlugin('hardhat-spdx-license-identifier');
-usePlugin('hardhat-deploy');
 
 // This is a sample hardhat task. To learn how to create your own go to
 // https://hardhat.dev/guides/create-task.html
-task('accounts', 'Prints the list of accounts', async () => {
-  const accounts = await ethers.getSigners();
+task('accounts', 'Prints the list of accounts', async (_, hardhat) => {
+  const { ethers } = hardhat
+  const accounts = await ethers.getSigners()
 
   for (const account of accounts) {
-    console.log(await account.getAddress());
+    console.log(await account.getAddress())
   }
-});
+})
 
 // You have to export an object to set up your config
 // This object can have the following optional entries:
 // defaultNetwork, networks, solc, and paths.
 // Go to https://hardhat.dev/config/ to learn more
-module.exports = _.merge(config['hardhat'], {
+module.exports = _.merge(config.hardhat, {
   networks: {
-    hardhatevm: {},
+    hardhat: {},
     ropsten: { /* merged from config.json */ },
     mainnet: { /* merged from config.json */ },
   },
   solc: {
     version: '0.6.12',
-    optimizer: { enabled: true, runs: 200 },
+    optimizer: {
+      enabled: true,
+      runs: 200,
+    },
   },
   spdxLicenseIdentifier: {
     overwrite: false,
@@ -55,7 +57,7 @@ module.exports = _.merge(config['hardhat'], {
       //   4: '0xaaaeffffff', // on rinkeby it could be another account
     },
   },
-});
+})
 
 // Old Truffle config:
 //
