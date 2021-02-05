@@ -35,10 +35,18 @@ Here's how it works:
 
 ## Exchanges
 
+**Note:** this is a list of exchanges where the Shield contract can protect investors. If you want to trade our token, use [CHT-ETH market](https://info.uniswap.org/token/0xa7e6b2ce535b83e82ab598e9e432705f8d7ce929) (also see "[Why CoinHunt token?](#why-coinhunt-token)").
+
 Shield can work on every exchange. We’ll implement it for Uniswap first, then Sushiswap, then smaller DEXes.
 
 ![Uniswap](./img/uniswap.png?raw=true&sanitize=true "Uniswap")
 ![Sushiswap](./img/sushiswap.png?raw=true&sanitize=true "Sushiswap")
+
+If you want to be notified when we launch on Uniswap & Sushiswap, please [join our Telegram](https://t.me/ShieldFinanceHQ). 
+
+## Why CoinHunt Token?
+
+CoinHunt Token (CHT) is used because Shield is a project of CoinHunt development group. We are looking forward to releasing more projects that buy & burn CHT.
 
 ## Install
 
