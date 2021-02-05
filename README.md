@@ -9,6 +9,10 @@ Shield is a smart contract that provides “liquidity options” — a new instr
 
 Read the [Medium article](https://medium.com/@coin-hunt-group/rugshield-defi-liquidity-options-4d942c0210b5) to learn how it works.
 
+## How it works
+
+![Shield - How it works](/img/rug-pull.png?raw=true "How it works")
+
 ## Install
 
 ```bash
