@@ -4,7 +4,6 @@
 [![Twitter](./img/twitter-fill.svg?raw=true&sanitize=true "Follow on Twitter")](https://twitter.com/ShieldFinanceHQ)
 [![Discord](./img/discord-fill.svg?raw=true&sanitize=true "Join Discord")](https://discord.gg/vxjTVeesWG)
 [![Medium](./img/medium-fill.svg?raw=true&sanitize=true "Join Medium")](https://medium.com/shield-finance-hq)
-[![Website](./img/global-fill.svg?raw=true&sanitize=true "Open website")](http://shieldfinance.net/)
 
 Shield is a smart contract that compensates your losses from rug pulls.
 
@@ -35,7 +34,7 @@ Here's how it works:
 
 ## Exchanges
 
-**Note:** this is a list of exchanges where the Shield contract can protect investors. If you want to trade our token, use [CHT-ETH market](https://info.uniswap.org/token/0xa7e6b2ce535b83e82ab598e9e432705f8d7ce929) (also see "[Why CoinHunt token?](#why-coinhunt-token)").
+**Note:** README has been released to get feedback, not to sell the token. So please don't buy anything now. If you want to get notified about our token, feel free to [join our Telegram](https://t.me/ShieldFinanceHQ).
 
 Shield can work on every exchange. We’ll implement it for Uniswap first, then Sushiswap, then smaller DEXes.
 
@@ -51,11 +50,6 @@ Shield can work on every blockchain. We’ll deploy on Ethereum first, then Bina
 ![Ethereum](./img/ethereum.png?raw=true&sanitize=true "Ethereum")
 ![Binance chain](./img/binance-chain.png?raw=true&sanitize=true "Binance chain")
 ![Polkadot](./img/polkadot.png?raw=true&sanitize=true "Polkadot")
-
-
-## Why CoinHunt Token?
-
-CoinHunt Token (CHT) is used because Shield is a project of CoinHunt development group. We are looking forward to releasing more projects that buy & burn CHT.
 
 ## Install
 
