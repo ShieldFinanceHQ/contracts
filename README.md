@@ -33,6 +33,13 @@ Here's how it works:
 * Traders don’t get their money back.
 * Protectors get their money back + split Traders’ money proportionally.
 
+## Exchanges
+
+Shield can work on every exchange. We’ll implement it for Uniswap first, then Sushiswap, then smaller DEXes.
+
+![Uniswap](./img/uniswap.png?raw=true&sanitize=true "Uniswap")
+![Sushiswap](./img/sushiswap.png?raw=true&sanitize=true "Sushiswap")
+
 ## Install
 
 ```bash
@@ -66,6 +73,9 @@ yarn coverage
 * Advance time past deposit deadline
 * Advance time past withdraw deadline
 
-## Copyright
+## Credits
 
+* [OpenZeppelin Contracts](https://openzeppelin.com/contracts/)
+* [Hardhat development environment](https://hardhat.org/)
+* [Ampleforth Contracts](https://www.ampleforth.org/)
 * [Remix icons](https://remixicon.com/)
