@@ -29,27 +29,15 @@ yarn lint
 yarn coverage
 ```
 
-## Addresses (mainnet)
-
-- ERC-20 Token: [TODO](https://etherscan.io/token/TODO)
-- Pool: [TODO](https://etherscan.io/address/TODO)
-- Contract: [TODO](https://etherscan.io/address/TODO)
-
-## Addresses (testnet)
-
-- ERC-20 Token: [TODO](https://kovan.etherscan.io/token/TODO)
-- Pool: [TODO](https://etherscan.io/address/TODO)
-- Contract: [TODO](https://etherscan.io/address/TODO)
-
 ## Technical documentation
 
 ### Events
 
-* User creates a shield contract (sends transaction)
-* User buys protection (calls smart contract `buy` function)
-* User sells protection (calls smart contract `sell` function)
-* User claims protection
-* User claims premium
-* User withdraws liquidity from target pool
-* Time passes past funding window
-* Time passes past active window
+* Deploy shield contract
+* Deposit into shield contract as a trader
+* Deposit into shield contract as a protector
+* Withdraw from shield contract as a trader (if rug pull happens)
+* Withdraw from shield contract as a protector (if rug pull doesn't happen)
+* Pull the rug as malicious actor
+* Advance time past deposit deadline
+* Advance time past withdraw deadline
