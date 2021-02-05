@@ -68,11 +68,11 @@ Shield can work on every blockchain. We’ll deploy on Ethereum first, then Bina
 
 ### Usage
 
-* Call [initialize](#initialize-method) method after deployment to activate the Shield contract.
-* Call [deposit](#deposit-method) method as Trader to receive the right for compensation in future (if you think rug pull is likely).
-* Call [deposit](#deposit-method) method as Protector to receive the right for premium in future (if you think rug pull is unlikely). 
-* Call [withdraw](#withdraw-method) method as Trader to receive compensation (if rug pull happens).
-* Call [withdraw](#withdraw-method) method as Protector to receive premium (if rug pull doesn't happen).
+* Call [initialize method](#initialize-method) after deployment to activate the Shield contract.
+* Call [deposit method](#deposit-method) as Trader to receive the right for compensation in future (if you think rug pull is likely).
+* Call [deposit method](#deposit-method) as Protector to receive the right for premium in future (if you think rug pull is unlikely). 
+* Call [withdraw method](#withdraw-method) as Trader to receive compensation (if rug pull happens).
+* Call [withdraw method](#withdraw-method) as Protector to receive premium (if rug pull doesn't happen).
 
 #### Initialize method
 
@@ -90,21 +90,21 @@ Parameters:
 
 * Is a Trader (boolean: true for Traders, false for Protectors)
 
-deposit method allows the user to fund the contract. By funding the contract, the user secures the right to receive the compensation (for Traders) or premium (for Protectors) by calling the "[withdraw](#withdraw-method)" method later.
+`deposit` method allows the user to fund the contract. By funding the contract, the user secures the right to receive the compensation (for Traders) or premium (for Protectors) by calling the [withdraw method](#withdraw-method) later.
 
 Notes:
 
-* deposit method must be called individually by each user.
-* deposit method can be called multiple times by each user.
-* deposit method can be called with a different "Is a Trader" parameter by each user ([see FAQ](#faq)).
-* deposit method must be called with some ETH (will be added to Traders fund or Protectors fund, depending on "Is a Trader" parameter).
-* deposit method must be called before the [Deposit deadline block number](#deposit-deadline-block-number) by both Traders and Protectors.
+* `deposit` method must be called individually by each user.
+* `deposit` method can be called multiple times by each user.
+* `deposit` method can be called with a different "Is a Trader" parameter by each user ([see FAQ](#faq)).
+* `deposit` method must be called with some ETH (will be added to Traders fund or Protectors fund, depending on "Is a Trader" parameter).
+* `deposit` method must be called before the [Deposit deadline block number](#deposit-deadline-block-number) by both Traders and Protectors.
 
 #### Withdraw method
 
 Parameters: none
 
-withdraw method allows to receive the compensation (for Traders) or premium (for Protectors):
+`withdraw` method allows to receive the compensation (for Traders) or premium (for Protectors):
 
 For Traders:
 
@@ -122,7 +122,7 @@ For Protectors:
 
 Notes:
 
-* `withdraw` method must be called from the same address as the "[deposit](#deposit-method)" method.
+* `withdraw` method must be called from the same address as the [deposit method](#deposit-method).
 * `withdraw` method must be called before the [Withdraw deadline block number](#withdraw-deadline-block-number) by Traders.
 * `withdraw` method must be called after the [Withdraw deadline block number](#withdraw-deadline-block-number) by Protectors.
 
