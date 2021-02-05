@@ -32,7 +32,7 @@ pragma solidity ^0.6.0;
  * @title SafeMathInt
  * @dev Math operations for int256 with overflow safety checks.
  */
-library SafeMathInt {
+library SafeMathIntUpgradeable {
     int256 private constant MIN_INT256 = int256(1) << 255;
     int256 private constant MAX_INT256 = ~(int256(1) << 255);
 

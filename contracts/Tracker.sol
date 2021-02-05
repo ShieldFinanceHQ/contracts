@@ -2,13 +2,13 @@
 
 pragma solidity ^0.6.0;
 
-import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
-import "./lib/ERC20.sol";
-import "./lib/SafeMathInt.sol";
+import "./lib/ERC20Upgradeable.sol";
+import "./lib/SafeMathIntUpgradeable.sol";
 
-import "@nomiclabs/hardhat/console.sol";
+import "hardhat/console.sol";
 
 /**
  * @title Tracker ERC20 token
@@ -16,7 +16,7 @@ import "@nomiclabs/hardhat/console.sol";
  *      We support splitting the currency in expansion and combining the currency on contraction by
  *      changing the exchange rate between the hidden 'gons' and the public 'fragments'.
  */
-contract Tracker is ERC20UpgradeSafe, OwnableUpgradeSafe {
+contract Tracker is ERC20Upgradeable, OwnableUpgradeable {
     // `Fragment` is the "display unit" (shown in the wallet or exchange UI)
     // `Gon` is the "accounting unit" (used for balance calculations & transfers)
 
@@ -37,8 +37,8 @@ contract Tracker is ERC20UpgradeSafe, OwnableUpgradeSafe {
     // We do not guarantee that the sum of all balances equals the result of calling totalSupply().
     // This is because, for any conversion function 'f()' that has non-zero rounding error,
     // f(x0) + f(x1) + ... + f(xn) is not always equal to f(x0 + x1 + ... xn).
-    using SafeMath for uint256;
-    using SafeMathInt for int256;
+    using SafeMathUpgradeable for uint256;
+    using SafeMathIntUpgradeable for int256;
 
     event LogRebase(uint256 indexed epoch, uint256 totalSupply);
     event LogPolicyUpdated(address policy);

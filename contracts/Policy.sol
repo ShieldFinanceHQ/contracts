@@ -2,14 +2,14 @@
 
 pragma solidity ^0.6.0;
 
-import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
-import "./lib/SafeMathInt.sol";
-import "./lib/UInt256Lib.sol";
+import "./lib/SafeMathIntUpgradeable.sol";
+import "./lib/UInt256LibUpgradeable.sol";
 import "./Tracker.sol";
 
-import "@nomiclabs/hardhat/console.sol";
+import "hardhat/console.sol";
 
 interface IOracle {
     function getData() external returns (uint256, bool);
@@ -25,10 +25,10 @@ interface IOracle {
  *      This component regulates the token supply of the uFragments ERC20 token in response to
  *      market oracles.
  */
-contract Policy is OwnableUpgradeSafe {
-    using SafeMath for uint256;
-    using SafeMathInt for int256;
-    using UInt256Lib for uint256;
+contract Policy is OwnableUpgradeable {
+    using SafeMathUpgradeable for uint256;
+    using SafeMathIntUpgradeable for int256;
+    using UInt256LibUpgradeable for uint256;
 
     event LogRebase(
         uint256 indexed epoch,

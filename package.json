@@ -40,7 +40,9 @@
     "node": "^10.22.0"
   },
   "dependencies": {
-    "@openzeppelin/contracts-ethereum-package": "^3.0.0",
+    "@openzeppelin/contracts": "^3.4.0",
+    "@openzeppelin/contracts-upgradeable": "^3.4.0",
+    "@openzeppelin/hardhat-upgrades": "^1.6.0",
     "app-root-path": "3.0.0",
     "dotenv": "^8.2.0",
     "frg-ethereum-runners": "https://github.com/ampleforth/frg-ethereum-runners.git#v1.0.0-alpha",
@@ -77,7 +79,7 @@
     "eslint-plugin-spellcheck": "^0.0.17",
     "eslint-plugin-standard": "^5.0.0",
     "ethereum-waffle": "^3.0.2",
-    "ethers": "^5.0.9",
+    "ethers": "^5.0.29",
     "fast-check": "^2.12.1",
     "hardhat": "^2.0.8",
     "hardhat-deploy": "^0.7.0-beta.44",

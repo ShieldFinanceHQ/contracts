@@ -34,7 +34,7 @@ module.exports = _.merge(config.hardhat, {
     ropsten: { /* merged from config.json */ },
     mainnet: { /* merged from config.json */ },
   },
-  solc: {
+  solidity: {
     version: '0.6.12',
     optimizer: {
       enabled: true,

@@ -2,7 +2,7 @@
 
 pragma solidity ^0.6.0;
 
-library UInt256Lib {
+library UInt256LibUpgradeable {
 
     uint256 private constant MAX_INT256 = ~(uint256(1) << 255);
 

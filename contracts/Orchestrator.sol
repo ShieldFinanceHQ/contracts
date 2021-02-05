@@ -2,21 +2,22 @@
 
 pragma solidity ^0.6.0;
 
-import "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import "./Policy.sol";
 
-import "@nomiclabs/hardhat/console.sol";
+import "hardhat/console.sol";
 
 /**
  * @title Orchestrator
  * @notice The orchestrator is the main entry point for rebase operations. It coordinates the policy
  * actions with external consumers.
  */
-contract Orchestrator is OwnableUpgradeSafe {
-    using SafeMath for uint256;
-    using SafeMathInt for int256;
-    using UInt256Lib for uint256;
+contract Orchestrator is OwnableUpgradeable {
+    using SafeMathUpgradeable for uint256;
+    using SafeMathIntUpgradeable for int256;
+    using UInt256LibUpgradeable for uint256;
 
     struct Transaction {
         bool enabled;
