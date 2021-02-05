@@ -54,21 +54,8 @@ Shield can work on every blockchain. We’ll deploy on Ethereum first, then Bina
 ## Install
 
 ```bash
-# Install project dependencies
+# git clone $REPO_URL
 yarn install
-```
-
-## Test
-
-``` bash
-# Run all unit tests
-yarn test
-
-# Lint code
-yarn lint
-
-# View code coverage
-yarn coverage
 ```
 
 ## Technical documentation

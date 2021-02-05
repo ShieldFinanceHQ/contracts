@@ -6,3 +6,16 @@
 
 CoinHunt Token (CHT) is used because Shield is a project of CoinHunt development group. We are looking forward to releasing more projects that buy & burn CHT.
 
+## Test
+
+``` bash
+# Run all unit tests
+yarn test
+
+# Lint code
+yarn lint
+
+# View code coverage
+yarn coverage
+```
+
