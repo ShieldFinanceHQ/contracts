@@ -1,10 +1,14 @@
 # Shield contract
 
 [![Telegram](./img/telegram-fill.svg?raw=true&sanitize=true "Join Telegram")](https://t.me/ShieldFinanceHQ)
+[![Twitter](./img/twitter-fill.svg?raw=true&sanitize=true "Follow on Twitter")](https://twitter.com/ShieldFinanceHQ)
+[![Discord](./img/discord-fill.svg?raw=true&sanitize=true "Join Discord")](https://discord.gg/vxjTVeesWG)
+[![Medium](./img/medium-fill.svg?raw=true&sanitize=true "Join Medium")](https://medium.com/shield-finance-hq)
+[![Website](./img/global-fill.svg?raw=true&sanitize=true "Open website")](http://shieldfinance.net/)
 
 Shield is a smart contract that compensates your losses from rug pulls.
 
-Learn how it works:
+Here's how it works:
 
 ![Shield - How it works](./img/rug-pull.png?raw=true "How it works")
 
@@ -40,3 +44,7 @@ yarn coverage
 * Pull the rug as malicious actor
 * Advance time past deposit deadline
 * Advance time past withdraw deadline
+
+## Copyright
+
+* [Remix icons](https://remixicon.com/)
