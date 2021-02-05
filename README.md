@@ -1,6 +1,4 @@
-# Shield Finance Smart Contracts
-
-## Overview
+# Shield contract
 
 Shield is a smart contract that compensates your losses from rug pulls.
 
