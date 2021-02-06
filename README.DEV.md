@@ -4,7 +4,6 @@
 
 ## Why CoinHunt Token?
 
-CoinHunt Token (CHT) is used because Shield is a project of CoinHunt development group. We are looking forward to releasing more projects that buy & burn CHT.
 
 ## Test
 
