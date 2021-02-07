@@ -15,6 +15,7 @@ Shield is a smart contract that compensates your losses from rug pulls.
 ## Contents
 
 * [How it works](#how-it-works)
+* [How much money can you get](#how-much-money-will-i-get)
 * [Exchanges](#exchanges)
 * [Blockchains](#blockchains)
 * [Technical documentation](#technical-documentation)
@@ -32,13 +33,29 @@ Shield is a smart contract that compensates your losses from rug pulls.
 
 **If rug pull happens:**
 
-* Traders get their money back + split Protectors’ money proportionally.
+* Traders get their money back + split Protectors’ money.
 * Protectors don’t get their money back.
 
 **If rug pull doesn’t happen:**
 
 * Traders don’t get their money back.
-* Protectors get their money back + split Traders’ money proportionally.
+* Protectors get their money back + split Traders’ money.
+
+## How much money can you get
+
+* Traders receive **3x their deposit** if rug pull happens.
+* Protectors receive **1.5x their deposit** if rug pull doesn't happen.
+
+*Notes:*
+* This calculation is using the default payout coefficient (2:1). The payout coefficient is a parameter that is set only once during the Shield contract deployment.
+* Payouts are made from one group to another group:
+  * If rug pull happens: Protectors pay Traders.
+  * If rug pull doesn't happen: Traders pay Protectors.
+* Payouts are limited by the opposite group fund size:
+  * If rug pull happens: Traders will receive payouts up to Protectors fund size.
+  * If rug pull doesn't happen: Protectors will receive payouts up to Traders fund size.
+* Payouts are sorted by deposit timestamp (deposit early if you want to ensure payout).
+* Those users who don't receive payouts will receive full refunds of the original deposit.
 
 ## Exchanges
 
