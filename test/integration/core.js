@@ -14,6 +14,10 @@ const fc = require('fast-check')
  * It should not allow to claim premium before claiming deadline
  */
 
+/**
+ * TODO: Allow the contract owner to withdraw stuck deposits after unlock_deadline + 6 months
+ */
+
 const BN = web3.utils.BN
 
 require('chai')

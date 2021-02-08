@@ -95,9 +95,11 @@ Shield can work on every blockchain. We’ll deploy on Ethereum first, then Bina
 
 Parameters:
 
+* [Payout coefficient](#payout-coefficient)
 * [Liquidity pool address](#liquidity-pool-address)
 * [Deposit deadline block number](#deposit-deadline-block-number)
 * [Withdraw deadline block number](#withdraw-deadline-block-number)
+* [Unlock deadline block number](#unlock-deadline-block-number)
 
 initialize method activates the Shield contract by providing required parameters. 
 
@@ -143,6 +145,41 @@ Notes:
 * `withdraw` method must be called before the [Withdraw deadline block number](#withdraw-deadline-block-number) by Traders.
 * `withdraw` method must be called after the [Withdraw deadline block number](#withdraw-deadline-block-number) by Protectors.
 
+#### Payout coefficient
+
+Examples:
+
+* 2 (default)
+* 3
+* 5
+
+Payout coefficient is used to calculate payouts for Traders & Protectors.
+
+If rug pull happens:
+* Each trader receives `his_deposit + payout_coefficient * his_deposit`
+* Each protector receives nothing.
+
+If rug pull doesn't happen:
+* Each trader receives nothing.
+* Each protector receives `his_deposit + (1 / payout_coefficient) * his_deposit`.
+
+You can also think of payout coefficient as ideal "fund ratio" = `protector_fund_size / trader_fund_size`.
+
+**Note:** the contract may be overfunded. For example:
+* Traders deposit 1 ETH total.
+* Protectors deposit 10 ETH total.
+* Payout coefficient is only 2.
+
+In this case, only 2 ETH from protectors fund become eligible for payouts. The remaining 8 ETH are not used, and can be withdrawn anytime.
+
+It is normal for the contract to be overfunded, because neither side knows how much the other side will deposit before [deposit deadline](#deposit-deadline-block-number):
+* Traders don't know how much Protectors will deposit.
+* Protectors don't know how much Traders will deposit.
+
+In this case, it makes sense for every user to deposit now (as soon as he decides to participate) & wait for the other side to deposit. The user who deposits first will never lose money because of that action:
+
+* If he deposits first, and nobody deposits on the other side, he can simply withdraw his deposit back (receive a refund).
+* If he deposits first, and somebody else deposits on the other side, he will actually participate in the contract (and receive a payout in case of favorable outcome). 
 
 #### Liquidity pool address
 
@@ -160,9 +197,9 @@ It is possible to deploy multiple Shield contracts that protect the same liquidi
 
 Examples:
 
-* 11781922 (Ethereum block #11781922, [already mined](https://etherscan.io/block/11781922))
-* 118000000 (Ethereum block #118000000, not mined yet)
-* 118293934 (Ethereum block #118293934, not mined yet)
+* 11781922 (Ethereum block #11781922)
+* 11800000 (Ethereum block #11800000)
+* 11829393 (Ethereum block #11829393)
 
 Deposit deadline motivates the Traders & Protectors to fund the contract. They should only send funds to the contract before the Deposit deadline. If anybody sends the funds to the contract after the Deposit deadline, the transaction will be reverted.
 
@@ -170,11 +207,31 @@ Deposit deadline must be at least ~1 day in future (5760 blocks in future) from 
 
 #### Withdraw deadline block number
 
-* 118000000 (Ethereum block #118000000, not mined yet)
-* 118293934 (Ethereum block #118293934, not mined yet)
-* 119483848 (Ethereum block #119483848, not mined yet)
+Examples:
+
+* 11800000 (Ethereum block #11800000)
+* 11829393 (Ethereum block #11829393)
+* 11948384 (Ethereum block #11948384)
 
 Withdraw deadline prevents the Protectors from withdrawing their money too early. It provides time for Traders to withdraw their compensation if the rug pull actually happens. Note that Traders can withdraw only if the rug pull happens on the liquidity pool that is protected by that specific Shield contract (because a single Shield contract protects a single liquidity pool).
+
+#### Unlock deadline block number
+
+Examples:
+
+* 11900000 (Ethereum block #11900000)
+* 11983438 (Ethereum block #11983438)
+* 12064854 (Ethereum block #12064854)
+
+Unlock deadline allows to withdraw stuck deposits. For example:
+* Trader deposits 1 ETH.
+* Protector deposits 2 ETH.
+* Rug pull doesn't happen.
+* Protector receives the right to withdraw both his & traders' deposit, but can't it (because he lost his private key).
+* Trader can't withdraw either (because rug pull didn't happen)
+* Trader realizes that his deposit is stuck.
+* Trader waits until "Unlock deadline block number".
+* Trader withdraws his deposit ("un-stucks" it).
 
 ### FAQ
 
