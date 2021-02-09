@@ -30,17 +30,17 @@ Shield is a smart contract that compensates your losses from rug pulls.
 
 :gorilla: Traders think that a rug pull is possible. Therefore, they are willing to pay a small premium to receive a big compensation if rug pull does actually happen.
 
-:whale2: Protectors think that a rug pull is unlikely. Maybe they are developers who control the liquidity tokens, or maybe they are insiders who know more than the general public. Anyway, they are willing to stake a big compensation to receive a small premium if rug pull doesn’t actually happen.
+:whale2: Protectors think that a rug pull is unlikely. Maybe they are developers who control the liquidity tokens, or maybe they are insiders who know more than the general public. Anyway, they are willing to stake a big compensation to receive a small premium if rug pull doesn't actually happen.
 
 **If rug pull happens:**
 
-* Traders get their money back + split Protectors’ money.
-* Protectors don’t get their money back.
+* Traders get 3x their deposit.
+* Protectors get nothing.
 
 **If rug pull doesn’t happen:**
 
-* Traders don’t get their money back.
-* Protectors get their money back + split Traders’ money.
+* Traders get nothing.
+* Protectors get 1.5x their deposit.
 
 ## How much money can you get
 
