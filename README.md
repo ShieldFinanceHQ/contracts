@@ -83,7 +83,7 @@ CoinHunt Token (CHT) is used because Shield is a project of CoinHunt development
 
 * Use case: buy & burn CHT using fees from Shield project.
 * Total supply: 1'000'000'000 CHT.
-* Markets: [Uniswap](https://info.uniswap.org/token/0xa7e6b2ce535b83e82ab598e9e432705f8d7ce929).
+* Markets: [:unicorn: Uniswap](https://info.uniswap.org/token/0xa7e6b2ce535b83e82ab598e9e432705f8d7ce929).
 
 We may migrate the token to a new contract in future to support [locked tokens](#locked-tokens). Get notified by [joining our Telegram](https://t.me/ShieldFinanceHQ). 
 
