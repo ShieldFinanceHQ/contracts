@@ -18,6 +18,7 @@ Shield is a smart contract that compensates your losses from rug pulls.
 * [How much money can you get](#how-much-money-will-i-get)
 * [Exchanges](#exchanges)
 * [Blockchains](#blockchains)
+* [CoinHunt token](#coinhunt-token)
 * [Technical documentation](#technical-documentation)
 
 ## How it works
@@ -59,7 +60,7 @@ Shield is a smart contract that compensates your losses from rug pulls.
 
 ## Exchanges
 
-**Note:** README has been released to get feedback, not to sell the token. So please don't buy anything now. If you want to get notified about our token, feel free to [join our Telegram](https://t.me/ShieldFinanceHQ).
+**Note:** We have a [Uniswap market](https://info.uniswap.org/token/0xa7e6b2ce535b83e82ab598e9e432705f8d7ce929) for people who want to trade the CoinHunt token ([why CoinHunt?](#coinhunt-token)). This section describes the exchanges where Shield can be used to protect other liquidity pools (not only traded).
 
 Shield can work on every exchange. We’ll implement it for Uniswap first, then Sushiswap, then smaller DEXes.
 
@@ -75,6 +76,37 @@ Shield can work on every blockchain. We’ll deploy on Ethereum first, then Bina
 ![Ethereum](./img/ethereum.png?raw=true&sanitize=true "Ethereum")
 ![Binance chain](./img/binance-chain.png?raw=true&sanitize=true "Binance chain")
 ![Polkadot](./img/polkadot.png?raw=true&sanitize=true "Polkadot")
+
+## CoinHunt Token
+
+CoinHunt Token (CHT) is used because Shield is a project of CoinHunt development group.
+
+* Use case: buy & burn CHT using fees from Shield project.
+* Total supply: 1'000'000'000 CHT.
+
+We may migrate the token to a new contract in future to support [locked tokens](#locked-tokens). Get notified by [joining our Telegram](https://t.me/ShieldFinanceHQ). 
+
+### Locked tokens
+
+* We plan to lock >90% of CHT supply.
+* Locked tokens can't be transferred.
+* Locked tokens can't participate in buy & burn (only free tokens on the open market can be bought & burned)
+* Locked tokens **can be traded**, but only under specific rules within our smart contract:
+  * Price of locked tokens is fixed at 24H average price of free tokens (if free tokens price goes up, then locked tokens price goes up too)
+  * Sellers can place only limit orders (delayed sells).
+  * Buyers can place only market orders (instant buys).
+  * Sell orders are sorted by placement time & filled one after another (early sells are filled earlier).
+  * Sellers don't need to modify the price on their orders (the price is adjusted automatically to 24H average price of free tokens).
+  * Sellers can cancel their orders.
+  * Sellers can decrease the amount on their orders.
+  * Sellers can't increase the amount on their orders.
+  * Buyers receive purchased locked tokens instantly.
+
+This mechanism allows the locked tokens to be traded without affecting the free token market.
+
+The fixed price removes slippage & prevents dumping.
+
+The strict order queue ensures fair participation for every holder.
 
 ## Technical documentation
 
