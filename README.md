@@ -1,5 +1,6 @@
 # Shield Finance
 
+[![Website](./img/global-fill.svg?raw=true&sanitize=true "Open website")](http://shieldfinance.net/)
 [![Telegram](./img/telegram-fill.svg?raw=true&sanitize=true "Join Telegram")](https://t.me/ShieldFinanceHQ)
 [![Twitter](./img/twitter-fill.svg?raw=true&sanitize=true "Follow on Twitter")](https://twitter.com/ShieldFinanceHQ)
 [![Discord](./img/discord-fill.svg?raw=true&sanitize=true "Join Discord")](https://discord.gg/vxjTVeesWG)
