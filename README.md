@@ -2,7 +2,7 @@
 
 [![Website](./img/global-fill.svg?raw=true&sanitize=true "Open website")](http://shieldfinance.net/)
 [![Telegram](./img/telegram-fill.svg?raw=true&sanitize=true "Join Telegram")](https://t.me/ShieldFinanceHQ)
-[![Twitter](./img/twitter-fill.svg?raw=true&sanitize=true "Follow on Twitter")](https://twitter.com/ShieldFinanceHQ)
+[![Twitter](./img/twitter-fill.svg?raw=true&sanitize=true "Follow on Twitter")](https://twitter.com/ShieldFinance)
 [![Discord](./img/discord-fill.svg?raw=true&sanitize=true "Join Discord")](https://discord.gg/vxjTVeesWG)
 [![Reddit](./img/reddit-fill.svg?raw=true&sanitize=true "Follow on reddit")](https://www.reddit.com/r/ShieldFinanceHQ)
 [![Medium](./img/medium-fill.svg?raw=true&sanitize=true "Join Medium")](https://medium.com/shield-finance-hq)

@@ -56,7 +56,7 @@ We have a [demo version](https://shield-demo.glideapp.io/) of the user interface
 
 * [Website](http://shieldfinance.net/)
 * [Telegram](https://t.me/ShieldFinanceHQ)
-* [Twitter](https://twitter.com/ShieldFinanceHQ)
+* [Twitter](https://twitter.com/ShieldFinance)
 * [Discord](https://discord.gg/vxjTVeesWG)
 * [Reddit](https://www.reddit.com/r/ShieldFinanceHQ)
 * [Medium](https://medium.com/shield-finance-hq)
